@@ -304,84 +304,99 @@ export default function AddProductForm({
   /* ================= FORM ================= */
 
   return (
-    <form onSubmit={submit} className="bg-white p-6 shadow rounded grid gap-4 max-w-xl">
-      <h2 className="text-xl font-semibold">
-        {editData ? "Update Product" : "Add Product"}
-      </h2>
+  
+    <form
+  onSubmit={submit}
+  className="bg-white p-6 shadow-md rounded-md max-w-md mx-auto grid gap-4"
+>
+  <h2 className="text-lg font-semibold text-gray-800">
+    {editData ? "Update Product" : "Add Product"}
+  </h2>
 
-      <input
-        required
-        placeholder="Product Title"
-        className="border p-2 rounded"
-        value={title}
-        onChange={e => setTitle(e.target.value)}
-      />
+  {/* Product Title */}
+  <input
+    required
+    placeholder="Product Title"
+    className="border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+    value={title}
+    onChange={e => setTitle(e.target.value)}
+  />
 
-      <input
-        required
-        type="number"
-        placeholder="Price"
-        className="border p-2 rounded"
-        value={price}
-        onChange={e => setPrice(e.target.value)}
-      />
+  {/* Price */}
+  <input
+    required
+    type="number"
+    placeholder="Price"
+    className="border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+    value={price}
+    onChange={e => setPrice(e.target.value)}
+  />
 
-      <select
-        required
-        className="border p-2 rounded"
-        value={category}
-        onChange={e => setCategory(e.target.value)}
-      >
-        <option value="">Select Category</option>
-        {categories.map(c => (
-          <option key={c._id} value={c.name}>
-            {c.name}
-          </option>
-        ))}
-      </select>
+  {/* Category */}
+  <select
+    required
+    className="border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+    value={category}
+    onChange={e => setCategory(e.target.value)}
+  >
+    <option value="">Select Category</option>
+    {categories.map(c => (
+      <option key={c._id} value={c.name}>
+        {c.name}
+      </option>
+    ))}
+  </select>
 
-      <div>
-        <input
-          ref={fileRef}
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          className="border p-2 rounded w-full"
-          onChange={e => handleImageChange(e.target.files?.[0] || null)}
-        />
-        {imageError && (
-          <p className="text-red-600 text-sm mt-1 font-medium">{imageError}</p>
-        )}
-      </div>
+  {/* Image Upload */}
+  <div>
+    <input
+      ref={fileRef}
+      type="file"
+      accept="image/jpeg,image/png,image/webp"
+      className="border border-gray-300 p-2 rounded w-full text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      onChange={e => handleImageChange(e.target.files?.[0] || null)}
+    />
+    {imageError && (
+      <p className="text-red-600 text-xs mt-1">{imageError}</p>
+    )}
+  </div>
 
-      {preview && (
-        <img src={preview} className="w-32 h-32 object-cover rounded border" />
-      )}
+  {/* Image Preview */}
+  {preview && (
+    <img
+      src={preview}
+      className="w-24 h-24 object-cover rounded border mt-2"
+    />
+  )}
 
-      <textarea
-        required
-        placeholder="Description"
-        className="border p-2 rounded"
-        value={description}
-        onChange={e => setDescription(e.target.value)}
-      />
+  {/* Description */}
+  <textarea
+    required
+    placeholder="Description"
+    className="border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm resize-none h-24"
+    value={description}
+    onChange={e => setDescription(e.target.value)}
+  />
 
-      <div className="flex gap-3">
-        <button
-          disabled={loading || !!imageError}
-          className="bg-black text-white py-2 rounded w-full hover:bg-gray-800 disabled:opacity-50"
-        >
-          {loading ? "Saving..." : editData ? "Update" : "Save"}
-        </button>
+  {/* Buttons */}
+  <div className="flex gap-2">
+    <button
+      disabled={loading || !!imageError}
+      className="bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700 disabled:opacity-50 text-sm flex-1"
+    >
+      {loading ? "Saving..." : editData ? "Update" : "Save"}
+    </button>
 
-        <button
-          type="button"
-          onClick={reset}
-          disabled={loading}
-          className="border px-4 rounded hover:bg-gray-100"
-        >
-          Cancel
-        </button>
-      </div>
-    </form>
+    <button
+      type="button"
+      onClick={reset}
+      disabled={loading}
+      className="border border-gray-300 py-2 px-4 rounded hover:bg-gray-100 text-sm flex-1"
+    >
+      Cancel
+    </button>
+  </div>
+</form>
+
   );
 }
