@@ -17,14 +17,14 @@ r.post("/", auth, upload.single("image"), async (req, res) => {
       category: req.body.category || "general",   
               
       image: req.file
-        ? "https://e-com-admin-rho.vercel.app/uploads/" + req.file.filename
+        ? "https://e-com-admin-3.onrender.com/uploads/" + req.file.filename
         : ""
     });
 
     res.json(product);
 
   } catch (err) {
-    console.error(err); or
+    console.error(err);
     res.status(500).json({ msg: err.message });
   }
 });
@@ -66,7 +66,7 @@ r.put("/:id", auth, upload.single("image"), async (req, res) => {
     };
 
     if (req.file) {
-      data.image = "https://e-com-admin-rho.vercel.app/uploads/" + req.file.filename;
+      data.image = "https://e-com-admin-3.onrender.com/uploads/" + req.file.filename;
     }
 
     const updated = await Product.findByIdAndUpdate(

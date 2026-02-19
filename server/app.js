@@ -9,7 +9,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use(cors({
-  origin: ["https://e-com-admin-rho.vercel.app/"],
+  origin: ["https://e-com-admin-rho.vercel.app"],
   credentials: true 
 }));
 
