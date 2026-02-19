@@ -9,8 +9,8 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use(cors({
-  origin: ["http://localhost:5173"],
-  credentials: true
+  origin: ["https://e-com-admin-rho.vercel.app/"],
+  credentials: true 
 }));
 
 app.use("/api/admin", require("./routes/adminroute"));
