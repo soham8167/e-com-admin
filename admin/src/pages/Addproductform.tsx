@@ -175,17 +175,15 @@ export default function AddProductForm({
 }: Props) {
 
   const fileRef = useRef<HTMLInputElement | null>(null);
-
   const [showForm, setShowForm] = useState(false);
 
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState(""); // empty default
 
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState("");
-
   const [loading, setLoading] = useState(false);
   const [imageError, setImageError] = useState("");
 
@@ -197,7 +195,7 @@ export default function AddProductForm({
       setTitle(editData.title || "");
       setPrice(editData.price || "");
       setDescription(editData.description || "");
-      setCategory(editData.category || "");
+      setCategory(""); // do not preselect category
       setPreview(editData.image || "");
       setImage(null);
       setImageError("");
@@ -207,30 +205,24 @@ export default function AddProductForm({
   /* ================= IMAGE VALIDATION ================= */
 
   const handleImageChange = (file: File | null) => {
-    // always clear first
     setImage(null);
     setPreview("");
     setImageError("");
 
     if (!file) return;
 
-    const allowedTypes = [
-      "image/jpeg",
-      "image/png",
-      "image/webp"
-    ];
-
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
     const allowedExt = [".jpg", ".jpeg", ".png", ".webp"];
     const ext = file.name.substring(file.name.lastIndexOf(".")).toLowerCase();
 
     if (!allowedTypes.includes(file.type) || !allowedExt.includes(ext)) {
-      setImageError("❌ Only JPG, JPEG, PNG, WEBP images are allowed");
+      setImageError("Only JPG, JPEG, PNG, WEBP images are allowed");
       if (fileRef.current) fileRef.current.value = "";
       return;
     }
 
     if (file.size > 2 * 1024 * 1024) {
-      setImageError("❌ Image size must be less than 2MB");
+      setImageError("Image size must be less than 2MB");
       if (fileRef.current) fileRef.current.value = "";
       return;
     }
@@ -245,14 +237,13 @@ export default function AddProductForm({
     setTitle("");
     setPrice("");
     setDescription("");
-    setCategory("");
+    setCategory(""); // reset category
     setImage(null);
     setPreview("");
     setImageError("");
     setShowForm(false);
 
     if (fileRef.current) fileRef.current.value = "";
-
     onCancelEdit && onCancelEdit();
   };
 
@@ -314,7 +305,6 @@ export default function AddProductForm({
 
   return (
     <form onSubmit={submit} className="bg-white p-6 shadow rounded grid gap-4 max-w-xl">
-
       <h2 className="text-xl font-semibold">
         {editData ? "Update Product" : "Add Product"}
       </h2>
@@ -350,7 +340,6 @@ export default function AddProductForm({
         ))}
       </select>
 
-      {/* IMAGE INPUT */}
       <div>
         <input
           ref={fileRef}
@@ -359,20 +348,13 @@ export default function AddProductForm({
           className="border p-2 rounded w-full"
           onChange={e => handleImageChange(e.target.files?.[0] || null)}
         />
-
         {imageError && (
-          <p className="text-red-600 text-sm mt-1 font-medium">
-            {imageError}
-          </p>
+          <p className="text-red-600 text-sm mt-1 font-medium">{imageError}</p>
         )}
       </div>
 
-      {/* PREVIEW */}
       {preview && (
-        <img
-          src={preview}
-          className="w-32 h-32 object-cover rounded border"
-        />
+        <img src={preview} className="w-32 h-32 object-cover rounded border" />
       )}
 
       <textarea
@@ -400,7 +382,6 @@ export default function AddProductForm({
           Cancel
         </button>
       </div>
-
     </form>
   );
 }

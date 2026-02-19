@@ -166,14 +166,11 @@ import AdminCategoryForm from "./AdmincategoryForm";
 
 export default function AdminDashboard() {
   const nav = useNavigate();
-
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [category, setCategory] = useState("all");
   const [editData, setEditData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-
-  
 
   const logout = async () => {
     try {
@@ -183,8 +180,6 @@ export default function AdminDashboard() {
     }
     nav("/");
   };
-
-  
 
   const loadProducts = async () => {
     try {
@@ -197,30 +192,19 @@ export default function AdminDashboard() {
     }
   };
 
-  
-
   const loadCategories = async () => {
     try {
       const res = await api.get("/categories");
-
-      // add ALL at top
-      setCategories([
-        { _id: "all", name: "all", image: "" },
-        ...res.data
-      ]);
+      setCategories([{ _id: "all", name: "all", image: "" }, ...res.data]);
     } catch (e) {
       console.error("Load categories failed", e);
     }
   };
 
-  
-
   useEffect(() => {
     loadProducts();
     loadCategories();
   }, []);
-
-  
 
   const del = async (id: string) => {
     if (!confirm("Delete this product?")) return;
@@ -234,36 +218,21 @@ export default function AdminDashboard() {
     }
   };
 
-  
-
   const filtered =
     category === "all"
       ? products
       : products.filter(
-          p =>
-            (p.category || "").toLowerCase() ===
-            category.toLowerCase()
+          p => (p.category || "").toLowerCase() === category.toLowerCase()
         );
-
-  
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-
-      
-
       <aside className="w-64 bg-black text-white p-6 flex flex-col">
-
-        <h2 className="text-xl font-bold mb-4">
-          Admin Panel
-        </h2>
-
+        <h2 className="text-xl font-bold mb-4">Admin Panel</h2>
 
         <AdminCategoryForm onDone={loadCategories} />
 
-
         <div className="space-y-2 mt-6 flex-1 overflow-y-auto">
-
           {categories.map(c => (
             <button
               key={c._id}
@@ -274,22 +243,13 @@ export default function AdminDashboard() {
                   : "bg-gray-900 hover:bg-gray-800"
               }`}
             >
-              {/* category image */}
               {c.image && c.name !== "all" && (
-                <img
-                  src={c.image}
-                  className="w-6 h-6 object-cover rounded"
-                />
+                <img src={c.image} className="w-6 h-6 object-cover rounded" />
               )}
-
-              <span className="truncate">
-                {c.name.toUpperCase()}
-              </span>
+              <span className="truncate">{c.name.toUpperCase()}</span>
             </button>
           ))}
-
         </div>
-
 
         <button
           onClick={logout}
@@ -297,13 +257,9 @@ export default function AdminDashboard() {
         >
           Logout
         </button>
-
       </aside>
 
-
       <main className="flex-1 p-8">
-
-
         <AddProductForm
           onDone={loadProducts}
           editData={editData}
@@ -311,11 +267,8 @@ export default function AdminDashboard() {
           categories={categories.filter(c => c.name !== "all")}
         />
 
-
         <div className="mt-10 bg-white shadow rounded overflow-x-auto">
-
           <table className="w-full text-sm">
-
             <thead className="bg-gray-100">
               <tr>
                 <th className="p-3 text-left">Image</th>
@@ -325,9 +278,7 @@ export default function AdminDashboard() {
                 <th className="p-3 text-center">Actions</th>
               </tr>
             </thead>
-
             <tbody>
-
               {loading && (
                 <tr>
                   <td colSpan={5} className="text-center p-6">
@@ -336,48 +287,34 @@ export default function AdminDashboard() {
                 </tr>
               )}
 
-              {!loading && filtered.map(p => (
-                <tr key={p._id} className="border-t">
-
-                  <td className="p-3">
-                    <img
-                      src={p.image || "/no-image.png"}
-                      className="h-14 w-14 object-cover rounded"
-                    />
-                  </td>
-
-                  <td className="p-3 font-medium">
-                    {p.title}
-                  </td>
-
-                  <td className="p-3 text-center">
-                    {p.category}
-                  </td>
-
-                  <td className="p-3 text-center">
-                    ₹{p.price}
-                  </td>
-
-                  <td className="p-3 text-center space-x-2">
-
-                    <button
-                      onClick={() => setEditData(p)}
-                      className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
-                    >
-                      Edit
-                    </button>
-
-                    <button
-                      onClick={() => del(p._id)}
-                      className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
-                    >
-                      Delete
-                    </button>
-
-                  </td>
-
-                </tr>
-              ))}
+              {!loading &&
+                filtered.map(p => (
+                  <tr key={p._id} className="border-t">
+                    <td className="p-3">
+                      <img
+                        src={p.image || "/no-image.png"}
+                        className="h-14 w-14 object-cover rounded"
+                      />
+                    </td>
+                    <td className="p-3 font-medium">{p.title}</td>
+                    <td className="p-3 text-center">{p.category}</td>
+                    <td className="p-3 text-center">₹{p.price}</td>
+                    <td className="p-3 text-center space-x-2">
+                      <button
+                        onClick={() => setEditData(p)}
+                        className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => del(p._id)}
+                        className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
 
               {!loading && filtered.length === 0 && (
                 <tr>
@@ -386,12 +323,9 @@ export default function AdminDashboard() {
                   </td>
                 </tr>
               )}
-
             </tbody>
           </table>
-
         </div>
-
       </main>
     </div>
   );
