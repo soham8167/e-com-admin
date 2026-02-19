@@ -105,40 +105,30 @@ const Product = require("../models/Productmodel");
 const auth = require("../middlewares/authmiddleware");
 const upload = require("../middlewares/upload");
 
-/* ================= CREATE PRODUCT ================= */
+/* ================= CREATE ================= */
 
 r.post("/", auth, upload.single("image"), async (req, res) => {
   try {
-    const { title, price, description, category } = req.body;
-
-    if (!title || !price) {
-      return res.status(400).json({
-        msg: "Title and price are required"
-      });
-    }
-
-    const imageUrl = req.file
-      ? `${process.env.BASE_URL}/uploads/${req.file.filename}`
-      : "";
 
     const product = await Product.create({
-      title: title.trim(),
-      price: Number(price),
-      description: description || "",
-      category: category || "general",
-      image: imageUrl
+      title: req.body.title,
+      price: Number(req.body.price),
+      description: req.body.description || "",
+      category: req.body.category || "general",
+
+      image: req.file
+        ? "https://e-com-admin-3.onrender.com/uploads/" + req.file.filename
+        : ""
     });
 
-    res.status(201).json(product);
+    res.json(product);
 
   } catch (err) {
-    console.error("CREATE PRODUCT ERROR:", err);
-    res.status(500).json({ msg: "Create failed" });
+    res.status(500).json({ msg: err.message });
   }
 });
 
-
-/* ================= LIST PRODUCTS ================= */
+/* ================= LIST ================= */
 
 r.get("/", async (req, res) => {
   try {
@@ -156,68 +146,47 @@ r.get("/", async (req, res) => {
     res.json(list);
 
   } catch (err) {
-    console.error("GET PRODUCTS ERROR:", err);
-    res.status(500).json({ msg: "Fetch failed" });
+    res.status(500).json({ msg: err.message });
   }
 });
 
-
-/* ================= UPDATE PRODUCT ================= */
+/* ================= UPDATE ================= */
 
 r.put("/:id", auth, upload.single("image"), async (req, res) => {
   try {
-    const { title, price, description, category } = req.body;
 
     const data = {
-      title,
-      price: Number(price),
-      description,
-      category
+      title: req.body.title,
+      price: Number(req.body.price),
+      description: req.body.description,
+      category: req.body.category,
     };
 
     if (req.file) {
-      data.image = `${process.env.BASE_URL}/uploads/${req.file.filename}`;
+      data.image =
+        "https://e-com-admin-3.onrender.com/uploads/" +
+        req.file.filename;
     }
 
     const updated = await Product.findByIdAndUpdate(
       req.params.id,
       data,
-      { new: true, runValidators: true }
+      { new: true }
     );
-
-    if (!updated) {
-      return res.status(404).json({ msg: "Product not found" });
-    }
 
     res.json(updated);
 
   } catch (err) {
-    console.error("UPDATE ERROR:", err);
-    res.status(500).json({ msg: "Update failed" });
+    res.status(500).json({ msg: err.message });
   }
 });
 
-
-/* ================= DELETE PRODUCT ================= */
+/* ================= DELETE ================= */
 
 r.delete("/:id", auth, async (req, res) => {
-  try {
-    const deleted = await Product.findByIdAndDelete(
-      req.params.id
-    );
-
-    if (!deleted) {
-      return res.status(404).json({
-        msg: "Product not found"
-      });
-    }
-
-    res.json({ msg: "deleted" });
-
-  } catch (err) {
-    console.error("DELETE ERROR:", err);
-    res.status(500).json({ msg: "Delete failed" });
-  }
+  await Product.findByIdAndDelete(req.params.id);
+  res.json({ msg: "deleted" });
 });
 
 module.exports = r;
+

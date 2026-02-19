@@ -74,6 +74,27 @@ app.use("/api/categories", require("./routes/category"));
 
 app.use("/uploads", express.static("uploads"));
 
+
+
+
+app.use((err, req, res, next) => {
+
+  if (err.code === "LIMIT_FILE_SIZE") {
+    return res.status(400).json({
+      error: "Image must be less than 2MB"
+    });
+  }
+
+  if (err.message.includes("Only")) {
+    return res.status(400).json({
+      error: err.message
+    });
+  }
+
+  console.error(err);
+  res.status(500).json({ error: err.message });
+});
+
 /* ---------- EXPORT ---------- */
 
 module.exports = app;
