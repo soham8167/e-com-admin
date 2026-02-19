@@ -382,7 +382,7 @@ export default function AddProductForm({
   <div className="flex gap-2">
     <button
       disabled={loading || !!imageError}
-      className="bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700 disabled:opacity-50 text-sm flex-1"
+      className="cursor-pointer bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700 disabled:opacity-50 text-sm flex-1"
     >
       {loading ? "Saving..." : editData ? "Update" : "Save"}
     </button>
@@ -391,7 +391,7 @@ export default function AddProductForm({
       type="button"
       onClick={reset}
       disabled={loading}
-      className="border border-gray-300 py-2 px-4 rounded hover:bg-gray-100 text-sm flex-1"
+      className="cursor-pointer border border-gray-300 py-2 px-4 rounded hover:bg-gray-100 text-sm flex-1"
     >
       Cancel
     </button>
