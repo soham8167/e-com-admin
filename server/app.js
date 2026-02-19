@@ -27,6 +27,7 @@
 
 
 
+console.log("CORS BUILD VERSION 2");
 
 
 
