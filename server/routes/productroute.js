@@ -17,7 +17,7 @@ r.post("/", auth, upload.single("image"), async (req, res) => {
       category: req.body.category || "general",   
               
       image: req.file
-        ? "http://localhost:5000/uploads/" + req.file.filename
+        ? "https://e-com-admin-rho.vercel.app/uploads/" + req.file.filename
         : ""
     });
 
@@ -66,7 +66,7 @@ r.put("/:id", auth, upload.single("image"), async (req, res) => {
     };
 
     if (req.file) {
-      data.image = "http://localhost:5000/uploads/" + req.file.filename;
+      data.image = "https://e-com-admin-rho.vercel.app/uploads/" + req.file.filename;
     }
 
     const updated = await Product.findByIdAndUpdate(
