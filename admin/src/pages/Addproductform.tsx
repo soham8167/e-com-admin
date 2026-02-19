@@ -150,6 +150,12 @@
 
 
 
+
+
+
+
+
+
 import { useEffect, useState } from "react";
 import { api } from "../api/axios";
 
@@ -215,13 +221,18 @@ export default function AddProductForm({
       "image/webp"
     ];
 
-    if (!allowedTypes.includes(file.type)) {
-      setImageError("Only JPG, PNG, WEBP images are allowed.");
+    const allowedExt = [".jpg", ".jpeg", ".png", ".webp"];
+    const ext = file.name.substring(file.name.lastIndexOf(".")).toLowerCase();
+
+    // type + extension check
+    if (!allowedTypes.includes(file.type) || !allowedExt.includes(ext)) {
+      setImageError("Only JPG, JPEG, PNG, WEBP image files are allowed.");
       return;
     }
 
+    // size check
     if (file.size > 2 * 1024 * 1024) {
-      setImageError("Image size must be less than 2MB.");
+      setImageError("Image must be less than 2MB.");
       return;
     }
 
@@ -248,11 +259,8 @@ export default function AddProductForm({
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (imageError) return;
-
-    if (!category) {
-      return alert("Please select category");
-    }
+    if (imageError) return alert(imageError);
+    if (!category) return alert("Please select category");
 
     try {
       setLoading(true);
@@ -278,14 +286,13 @@ export default function AddProductForm({
       onDone();
 
     } catch (err: any) {
-      console.error(err);
       alert(err?.response?.data?.error || "Save failed");
     } finally {
       setLoading(false);
     }
   };
 
-  /* ================= BUTTON FIRST ================= */
+  /* ================= SHOW BUTTON FIRST ================= */
 
   if (!showForm) {
     return (
@@ -353,7 +360,6 @@ export default function AddProductForm({
           onChange={e => handleImageChange(e.target.files?.[0] || null)}
         />
 
-        {/* ERROR MESSAGE */}
         {imageError && (
           <p className="text-red-600 text-sm mt-1">
             {imageError}
@@ -378,7 +384,7 @@ export default function AddProductForm({
         onChange={e => setDescription(e.target.value)}
       />
 
-      {/* ACTIONS */}
+      {/* ACTION BUTTONS */}
       <div className="flex gap-3">
 
         <button
@@ -398,11 +404,7 @@ export default function AddProductForm({
         </button>
 
       </div>
+
     </form>
   );
 }
-
-
-
-
-
