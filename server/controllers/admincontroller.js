@@ -15,8 +15,8 @@ exports.login = async (req, res) => {
 
   res.cookie("adminToken", token, {
     httpOnly: true,
-    sameSite: "lax",
-    secure: false, 
+    sameSite: "none",
+    secure: true, 
   });
 
   res.json({ msg: "Login success" });
@@ -27,6 +27,10 @@ exports.me = (req, res) => {
 };
 
 exports.logout = (req, res) => {
-  res.clearCookie("adminToken");
+  res.clearCookie("adminToken", {
+    sameSite: "none",
+    secure: true
+  });
   res.json({ msg: "Logged out" });
 };
+

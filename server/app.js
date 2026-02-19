@@ -38,10 +38,11 @@ const cookieParser = require("cookie-parser");
 const app = express();
 
 app.use(cors({
-  origin: "https://e-com-admin-rho.vercel.app",
-  credentials: true,
-  methods: ["GET","POST","PUT","DELETE","OPTIONS"],
-  allowedHeaders: ["Content-Type","Authorization"]
+  origin: [
+    "https://e-com-admin-aahr.vercel.app",
+    "https://e-com-admin-rho.vercel.app"
+  ],
+  credentials: true
 }));
 
 app.use(express.json());
