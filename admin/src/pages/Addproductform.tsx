@@ -309,7 +309,7 @@ export default function AddProductForm({
   onSubmit={submit}
   className="bg-white p-6 shadow-md rounded-md max-w-md mx-auto grid gap-4"
 >
-  <h2 className="text-lg font-semibold text-gray-800">
+  <h2 className="cursor-pointer text-lg font-semibold text-gray-800">
     {editData ? "Update Product" : "Add Product"}
   </h2>
 
