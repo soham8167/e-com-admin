@@ -150,11 +150,6 @@
 
 
 
-
-
-
-
-
 import { useEffect, useState } from "react";
 import { api } from "../api/axios";
 
@@ -183,10 +178,12 @@ export default function AddProductForm({
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
+
   const [image, setImage] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string>("");
+  const [preview, setPreview] = useState("");
 
   const [loading, setLoading] = useState(false);
+  const [imageError, setImageError] = useState("");
 
   /* ================= OPEN FORM ON EDIT ================= */
 
@@ -199,27 +196,32 @@ export default function AddProductForm({
       setCategory(editData.category || "");
       setPreview(editData.image || "");
       setImage(null);
+      setImageError("");
     }
   }, [editData]);
 
   /* ================= IMAGE VALIDATION ================= */
 
   const handleImageChange = (file: File | null) => {
+    setImageError("");
+    setImage(null);
+    setPreview("");
+
     if (!file) return;
 
-    const allowed = [
+    const allowedTypes = [
       "image/jpeg",
       "image/png",
       "image/webp"
     ];
 
-    if (!allowed.includes(file.type)) {
-      alert("Only JPG, PNG, WEBP images allowed");
+    if (!allowedTypes.includes(file.type)) {
+      setImageError("Only JPG, PNG, WEBP images are allowed.");
       return;
     }
 
     if (file.size > 2 * 1024 * 1024) {
-      alert("Image must be less than 2MB");
+      setImageError("Image size must be less than 2MB.");
       return;
     }
 
@@ -236,6 +238,7 @@ export default function AddProductForm({
     setCategory("");
     setImage(null);
     setPreview("");
+    setImageError("");
     setShowForm(false);
     onCancelEdit && onCancelEdit();
   };
@@ -245,9 +248,10 @@ export default function AddProductForm({
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (imageError) return;
+
     if (!category) {
-      alert("Please select category");
-      return;
+      return alert("Please select category");
     }
 
     try {
@@ -301,6 +305,7 @@ export default function AddProductForm({
       onSubmit={submit}
       className="bg-white p-6 shadow rounded grid gap-4 max-w-xl"
     >
+
       <h2 className="text-xl font-semibold">
         {editData ? "Update Product" : "Add Product"}
       </h2>
@@ -332,7 +337,6 @@ export default function AddProductForm({
         onChange={e => setCategory(e.target.value)}
       >
         <option value="">Select Category</option>
-
         {categories.map(c => (
           <option key={c._id} value={c.name}>
             {c.name}
@@ -341,12 +345,21 @@ export default function AddProductForm({
       </select>
 
       {/* IMAGE */}
-      <input
-        type="file"
-        accept="image/jpeg,image/png,image/webp"
-        className="border p-2 rounded"
-        onChange={e => handleImageChange(e.target.files?.[0] || null)}
-      />
+      <div>
+        <input
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          className="border p-2 rounded w-full"
+          onChange={e => handleImageChange(e.target.files?.[0] || null)}
+        />
+
+        {/* ERROR MESSAGE */}
+        {imageError && (
+          <p className="text-red-600 text-sm mt-1">
+            {imageError}
+          </p>
+        )}
+      </div>
 
       {/* PREVIEW */}
       {preview && (
@@ -369,8 +382,8 @@ export default function AddProductForm({
       <div className="flex gap-3">
 
         <button
-          disabled={loading}
-          className="bg-black text-white py-2 rounded w-full hover:bg-gray-800 disabled:opacity-60"
+          disabled={loading || !!imageError}
+          className="bg-black text-white py-2 rounded w-full hover:bg-gray-800 disabled:opacity-50"
         >
           {loading ? "Saving..." : editData ? "Update" : "Save"}
         </button>
@@ -388,3 +401,8 @@ export default function AddProductForm({
     </form>
   );
 }
+
+
+
+
+

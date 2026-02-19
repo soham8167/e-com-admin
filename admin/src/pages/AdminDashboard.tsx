@@ -173,7 +173,7 @@ export default function AdminDashboard() {
   const [editData, setEditData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  /* ================= LOGOUT ================= */
+  
 
   const logout = async () => {
     try {
@@ -184,7 +184,7 @@ export default function AdminDashboard() {
     nav("/");
   };
 
-  /* ================= LOAD PRODUCTS ================= */
+  
 
   const loadProducts = async () => {
     try {
@@ -197,7 +197,7 @@ export default function AdminDashboard() {
     }
   };
 
-  /* ================= LOAD CATEGORIES ================= */
+  
 
   const loadCategories = async () => {
     try {
@@ -213,14 +213,14 @@ export default function AdminDashboard() {
     }
   };
 
-  /* ================= INIT ================= */
+  
 
   useEffect(() => {
     loadProducts();
     loadCategories();
   }, []);
 
-  /* ================= DELETE PRODUCT ================= */
+  
 
   const del = async (id: string) => {
     if (!confirm("Delete this product?")) return;
@@ -234,7 +234,7 @@ export default function AdminDashboard() {
     }
   };
 
-  /* ================= FILTER ================= */
+  
 
   const filtered =
     category === "all"
@@ -245,12 +245,12 @@ export default function AdminDashboard() {
             category.toLowerCase()
         );
 
-  /* ================= UI ================= */
+  
 
   return (
     <div className="flex min-h-screen bg-gray-100">
 
-      {/* ================= SIDEBAR ================= */}
+      
 
       <aside className="w-64 bg-black text-white p-6 flex flex-col">
 
@@ -258,11 +258,9 @@ export default function AdminDashboard() {
           Admin Panel
         </h2>
 
-        {/* ---------- CATEGORY CREATE ---------- */}
 
         <AdminCategoryForm onDone={loadCategories} />
 
-        {/* ---------- CATEGORY LIST ---------- */}
 
         <div className="space-y-2 mt-6 flex-1 overflow-y-auto">
 
@@ -292,7 +290,6 @@ export default function AdminDashboard() {
 
         </div>
 
-        {/* ---------- LOGOUT ---------- */}
 
         <button
           onClick={logout}
@@ -303,11 +300,9 @@ export default function AdminDashboard() {
 
       </aside>
 
-      {/* ================= MAIN ================= */}
 
       <main className="flex-1 p-8">
 
-        {/* ---------- ADD PRODUCT FORM ---------- */}
 
         <AddProductForm
           onDone={loadProducts}
@@ -316,7 +311,6 @@ export default function AdminDashboard() {
           categories={categories.filter(c => c.name !== "all")}
         />
 
-        {/* ================= TABLE ================= */}
 
         <div className="mt-10 bg-white shadow rounded overflow-x-auto">
 
