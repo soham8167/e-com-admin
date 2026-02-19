@@ -152,15 +152,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
 import { useEffect, useState } from "react";
 import { api } from "../api/axios";
 import { useNavigate } from "react-router-dom";
@@ -178,23 +169,34 @@ export default function AdminDashboard() {
   /* ---------------- LOGOUT ---------------- */
 
   const logout = async () => {
-    await api.post("/admin/logout");
+    try {
+      await api.post("/admin/logout");
+    } catch {}
     nav("/");
   };
 
   /* ---------------- LOAD PRODUCTS ---------------- */
 
   const loadProducts = async () => {
-    const res = await api.get("/products");
-    setProducts(res.data);
+    try {
+      const res = await api.get("/products");
+      setProducts(res.data);
+    } catch (e) {
+      console.error("Load products failed", e);
+    }
   };
 
   /* ---------------- LOAD CATEGORIES ---------------- */
 
   const loadCategories = async () => {
-    const res = await api.get("/categories");
-    // add "all" manually on top
-    setCategories([{ _id: "all", name: "all" }, ...res.data]);
+    try {
+      const res = await api.get("/categories");
+
+      // add ALL at top
+      setCategories([{ _id: "all", name: "all", image: "" }, ...res.data]);
+    } catch (e) {
+      console.error("Load categories failed", e);
+    }
   };
 
   /* ---------------- INIT ---------------- */
@@ -218,7 +220,9 @@ export default function AdminDashboard() {
     category === "all"
       ? products
       : products.filter(
-          p => (p.category || "").toLowerCase() === category.toLowerCase()
+          p =>
+            (p.category || "").toLowerCase() ===
+            category.toLowerCase()
         );
 
   /* ================= UI ================= */
@@ -226,38 +230,50 @@ export default function AdminDashboard() {
   return (
     <div className="flex min-h-screen">
 
-      {/* ---------------- SIDEBAR ---------------- */}
+      {/* ================= SIDEBAR ================= */}
 
       <aside className="w-64 bg-black text-white p-6 space-y-4">
-        <h2 className="text-xl font-bold mb-4">Admin Panel</h2>
 
-        {/* Category Create Form */}
+        <h2 className="text-xl font-bold">Admin Panel</h2>
+
+        {/* Create Category */}
         <AdminCategoryForm onDone={loadCategories} />
 
-        {/* Dynamic Categories */}
+        {/* Category List */}
         <div className="space-y-2 mt-6">
+
           {categories.map(c => (
             <button
               key={c._id}
               onClick={() => setCategory(c.name)}
-              className={`block w-full text-left px-3 py-2 rounded ${
-                category === c.name ? "bg-gray-700" : "bg-gray-900"
+              className={`flex items-center gap-3 w-full text-left px-3 py-2 rounded transition ${
+                category === c.name ? "bg-gray-700" : "bg-gray-900 hover:bg-gray-800"
               }`}
             >
-              {c.name.toUpperCase()}
+              {/* category image */}
+              {c.image && c.name !== "all" && (
+                <img
+                  src={c.image}
+                  className="w-6 h-6 object-cover rounded"
+                />
+              )}
+
+              <span>{c.name.toUpperCase()}</span>
             </button>
           ))}
+
         </div>
 
         <button
           onClick={logout}
-          className="bg-red-600 px-3 py-2 rounded w-full mt-6"
+          className="bg-red-600 px-3 py-2 rounded w-full mt-6 hover:bg-red-700"
         >
           Logout
         </button>
+
       </aside>
 
-      {/* ---------------- MAIN ---------------- */}
+      {/* ================= MAIN ================= */}
 
       <main className="flex-1 p-8 bg-gray-50">
 
@@ -269,7 +285,7 @@ export default function AdminDashboard() {
           categories={categories.filter(c => c.name !== "all")}
         />
 
-        {/* ---------------- TABLE ---------------- */}
+        {/* ================= TABLE ================= */}
 
         <div className="mt-10 bg-white shadow rounded overflow-x-auto">
           <table className="w-full text-sm">
@@ -291,7 +307,7 @@ export default function AdminDashboard() {
 
                   <td className="p-3">
                     <img
-                      src={p.image}
+                      src={p.image || "/no-image.png"}
                       className="h-14 w-14 object-cover rounded"
                     />
                   </td>
@@ -312,14 +328,14 @@ export default function AdminDashboard() {
 
                     <button
                       onClick={() => setEditData(p)}
-                      className="bg-blue-600 text-white px-3 py-1 rounded"
+                      className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
                     >
                       Edit
                     </button>
 
                     <button
                       onClick={() => del(p._id)}
-                      className="bg-red-600 text-white px-3 py-1 rounded"
+                      className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
                     >
                       Delete
                     </button>
@@ -345,3 +361,12 @@ export default function AdminDashboard() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
