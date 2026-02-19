@@ -152,11 +152,7 @@
 
 
 
-
-
-
-
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { api } from "../api/axios";
 
 interface Category {
@@ -178,6 +174,8 @@ export default function AddProductForm({
   categories
 }: Props) {
 
+  const fileRef = useRef<HTMLInputElement | null>(null);
+
   const [showForm, setShowForm] = useState(false);
 
   const [title, setTitle] = useState("");
@@ -191,7 +189,7 @@ export default function AddProductForm({
   const [loading, setLoading] = useState(false);
   const [imageError, setImageError] = useState("");
 
-  /* ================= OPEN FORM ON EDIT ================= */
+  /* ================= EDIT LOAD ================= */
 
   useEffect(() => {
     if (editData) {
@@ -209,9 +207,10 @@ export default function AddProductForm({
   /* ================= IMAGE VALIDATION ================= */
 
   const handleImageChange = (file: File | null) => {
-    setImageError("");
+    // always clear first
     setImage(null);
     setPreview("");
+    setImageError("");
 
     if (!file) return;
 
@@ -224,15 +223,15 @@ export default function AddProductForm({
     const allowedExt = [".jpg", ".jpeg", ".png", ".webp"];
     const ext = file.name.substring(file.name.lastIndexOf(".")).toLowerCase();
 
-    // type + extension check
     if (!allowedTypes.includes(file.type) || !allowedExt.includes(ext)) {
-      setImageError("Only JPG, JPEG, PNG, WEBP image files are allowed.");
+      setImageError("❌ Only JPG, JPEG, PNG, WEBP images are allowed");
+      if (fileRef.current) fileRef.current.value = "";
       return;
     }
 
-    // size check
     if (file.size > 2 * 1024 * 1024) {
-      setImageError("Image must be less than 2MB.");
+      setImageError("❌ Image size must be less than 2MB");
+      if (fileRef.current) fileRef.current.value = "";
       return;
     }
 
@@ -251,6 +250,9 @@ export default function AddProductForm({
     setPreview("");
     setImageError("");
     setShowForm(false);
+
+    if (fileRef.current) fileRef.current.value = "";
+
     onCancelEdit && onCancelEdit();
   };
 
@@ -259,8 +261,15 @@ export default function AddProductForm({
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (imageError) return alert(imageError);
-    if (!category) return alert("Please select category");
+    if (imageError) {
+      alert(imageError);
+      return;
+    }
+
+    if (!category) {
+      alert("Please select category");
+      return;
+    }
 
     try {
       setLoading(true);
@@ -273,13 +282,9 @@ export default function AddProductForm({
       if (image) data.append("image", image);
 
       if (editData) {
-        await api.put(`/products/${editData._id}`, data, {
-          headers: { "Content-Type": "multipart/form-data" }
-        });
+        await api.put(`/products/${editData._id}`, data);
       } else {
-        await api.post("/products", data, {
-          headers: { "Content-Type": "multipart/form-data" }
-        });
+        await api.post("/products", data);
       }
 
       reset();
@@ -292,7 +297,7 @@ export default function AddProductForm({
     }
   };
 
-  /* ================= SHOW BUTTON FIRST ================= */
+  /* ================= BUTTON VIEW ================= */
 
   if (!showForm) {
     return (
@@ -308,16 +313,12 @@ export default function AddProductForm({
   /* ================= FORM ================= */
 
   return (
-    <form
-      onSubmit={submit}
-      className="bg-white p-6 shadow rounded grid gap-4 max-w-xl"
-    >
+    <form onSubmit={submit} className="bg-white p-6 shadow rounded grid gap-4 max-w-xl">
 
       <h2 className="text-xl font-semibold">
         {editData ? "Update Product" : "Add Product"}
       </h2>
 
-      {/* TITLE */}
       <input
         required
         placeholder="Product Title"
@@ -326,7 +327,6 @@ export default function AddProductForm({
         onChange={e => setTitle(e.target.value)}
       />
 
-      {/* PRICE */}
       <input
         required
         type="number"
@@ -336,7 +336,6 @@ export default function AddProductForm({
         onChange={e => setPrice(e.target.value)}
       />
 
-      {/* CATEGORY */}
       <select
         required
         className="border p-2 rounded"
@@ -351,9 +350,10 @@ export default function AddProductForm({
         ))}
       </select>
 
-      {/* IMAGE */}
+      {/* IMAGE INPUT */}
       <div>
         <input
+          ref={fileRef}
           type="file"
           accept="image/jpeg,image/png,image/webp"
           className="border p-2 rounded w-full"
@@ -361,7 +361,7 @@ export default function AddProductForm({
         />
 
         {imageError && (
-          <p className="text-red-600 text-sm mt-1">
+          <p className="text-red-600 text-sm mt-1 font-medium">
             {imageError}
           </p>
         )}
@@ -375,7 +375,6 @@ export default function AddProductForm({
         />
       )}
 
-      {/* DESCRIPTION */}
       <textarea
         required
         placeholder="Description"
@@ -384,9 +383,7 @@ export default function AddProductForm({
         onChange={e => setDescription(e.target.value)}
       />
 
-      {/* ACTION BUTTONS */}
       <div className="flex gap-3">
-
         <button
           disabled={loading || !!imageError}
           className="bg-black text-white py-2 rounded w-full hover:bg-gray-800 disabled:opacity-50"
@@ -402,9 +399,12 @@ export default function AddProductForm({
         >
           Cancel
         </button>
-
       </div>
 
     </form>
   );
 }
+
+
+
+
