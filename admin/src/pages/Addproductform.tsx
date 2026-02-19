@@ -32,7 +32,7 @@ export default function AddProductForm({ onDone, editData, onCancelEdit }: Props
     setTitle("");
     setPrice("");
     setDescription("");
-    setCategory("electronics");
+    setCategory("");
    
     setImage(null);
     onCancelEdit && onCancelEdit();
