@@ -1,5 +1,4 @@
 
-
 import { useEffect, useState } from "react";
 import { api } from "../api/axios";
 
@@ -7,7 +6,9 @@ interface Props {
   onDone: () => void;
   editData?: any;
   onCancelEdit?: () => void;
+  categories: any[];   
 }
+
 
 export default function AddProductForm({ onDone, editData, onCancelEdit }: Props) {
   const [title, setTitle] = useState("");
