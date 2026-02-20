@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { api } from "../api/axios";
 import { useNavigate } from "react-router-dom";
-import AddProductForm from "./Addproductform";
-import AdminCategoryForm from "./AdmincategoryForm";
+import AddProductForm from "../components/Addproductform";
+import AdminCategoryForm from "../components/AdminCategoryForm";
 
 interface Category {
   _id: string;

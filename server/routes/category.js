@@ -22,7 +22,6 @@ r.post("/", auth, upload.single("image"), async (req, res) => {
   }
 });
 
-// ================= GET ALL =================
 
 r.get("/", async (req, res) => {
   try {
@@ -33,7 +32,6 @@ r.get("/", async (req, res) => {
   }
 });
 
-// ================= DELETE =================
 
 r.delete("/:id", auth, async (req, res) => {
   try {
