@@ -5,3 +5,4 @@ exports.createToken = (payload) =>
 
 exports.verifyToken = (token) =>
   jwt.verify(token, process.env.JWT_SECRET); 
+ 
