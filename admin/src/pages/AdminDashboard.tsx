@@ -71,7 +71,7 @@ export default function AdminDashboard() {
   return (
     <div className="flex min-h-screen bg-white text-black">
 
-      {/* ================= SIDEBAR ================= */}
+      {/* SIDEBAR */}
 
       <aside
         className={`${
@@ -118,7 +118,7 @@ export default function AdminDashboard() {
         </div>
       </aside>
 
-      {/* ================= MAIN ================= */}
+      {/*  MAIN  */}
 
       <main className="flex-1">
 

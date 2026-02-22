@@ -40,7 +40,7 @@ export default function AddProductForm({
       setTitle(editData.title || "");
       setPrice(editData.price || "");
       setDescription(editData.description || "");
-      setCategory(""); 
+      setCategory(editData.category || ""); 
       setPreview(editData.image || "");
       setImage(null);
       setImageError("");

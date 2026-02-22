@@ -1,13 +1,9 @@
-
-
 const r = require("express").Router();
 const Product = require("../models/Productmodel");
 const auth = require("../middlewares/authmiddleware");
 const upload = require("../middlewares/upload");
 
-
-let BASE_URL = '';
-
+let BASE_URL = "";
 
 r.post("/", auth, upload.single("image"), async (req, res) => {
   try {
@@ -17,37 +13,28 @@ r.post("/", auth, upload.single("image"), async (req, res) => {
       description: req.body.description || "",
       category: req.body.category,
 
-       
- 
-         image: req.file
+      image: req.file
         ? `${process.env.ENVIRONMENT === "production" ? "https://e-com-admin-3.onrender.com" : "http://localhost:5000"}/uploads/${req.file.filename}`
-        : ""
+        : "",
     });
 
     res.json(product);
-
   } catch (err) {
     res.status(500).json({ msg: err.message });
   }
 });
 
-/* ================= LIST ================= */
+/*  LIST  */
 
 r.get("/", async (req, res) => {
   try {
     const { category } = req.query;
 
-    const filter =
-      category && category !== "all"
-        ? { category }
-        : {};
+    const filter = category && category !== "all" ? { category } : {};
 
-    const list = await Product
-      .find(filter)
-      .sort({ createdAt: -1 });
+    const list = await Product.find(filter).sort({ createdAt: -1 });
 
     res.json(list);
-
   } catch (err) {
     res.status(500).json({ msg: err.message });
   }
@@ -65,17 +52,14 @@ r.put("/:id", auth, upload.single("image"), async (req, res) => {
     };
 
     if (req.file) {
-      data.image = `${BASE_URL}/uploads/${req.file.filename}`;
+      data.image = `${process.env.ENVIRONMENT === "production" ? "https://e-com-admin-3.onrender.com" : "http://localhost:5000"}/uploads/${req.file.filename}`;
     }
 
-    const updated = await Product.findByIdAndUpdate(
-      req.params.id,
-      data,
-      { new: true }
-    );
+    const updated = await Product.findByIdAndUpdate(req.params.id, data, {
+      new: true,
+    });
 
     res.json(updated);
-
   } catch (err) {
     res.status(500).json({ msg: err.message });
   }

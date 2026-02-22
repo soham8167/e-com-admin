@@ -1,25 +1,3 @@
-// require("dotenv").config();
-// const express = require("express");
-// const cors = require("cors");
-// const cookieParser = require("cookie-parser");
-
-// const app = express();
-
-// app.use(express.json());
-// app.use(cookieParser());
-
-// app.use(cors({
-//   origin: ["https://e-com-admin-rho.vercel.app"],
-//   credentials: true
-// }));
-
-// app.use("/api/admin", require("./routes/adminroute"));
-// app.use("/api/products", require("./routes/productroute"));
-// app.use("/uploads", express.static("uploads"));
-
-// module.exports = app;
-
-console.log("CORS BUILD VERSION 2");
 
 require("dotenv").config();
 const express = require("express");
@@ -28,7 +6,7 @@ const cookieParser = require("cookie-parser");
 
 const app = express();
 
-/* ---------- CORS CONFIG (FINAL) ---------- */
+/*  CORS CONFIG  */
 
 const allowedOrigins = [
   "https://e-com-admin-aahr.vercel.app",
@@ -54,12 +32,12 @@ app.use(
   }),
 );
 
-/* ---------- MIDDLEWARE ---------- */
+/* MIDDLEWARE  */
 
 app.use(express.json());
 app.use(cookieParser());
 
-/* ---------- ROUTES ---------- */
+/*  ROUTES  */
 
 app.use("/api/admin", require("./routes/adminroute"));
 app.use("/api/products", require("./routes/productroute"));
@@ -88,6 +66,5 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: err.message });
 });
 
-/* ---------- EXPORT ---------- */
 
 module.exports = app;
