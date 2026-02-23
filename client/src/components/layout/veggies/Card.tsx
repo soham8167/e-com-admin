@@ -9,9 +9,9 @@ const Card = () => {
   const navigate = useNavigate();
   const [quantities, setQuantities] = useState<Record<string, number>>({});
 
-  // ✅ FILTER ONLY FRUITS CATEGORY
+  // ✅ FILTER ONLY veggies CATEGORY
   const fruitProducts = products.filter(
-    (item) => item.category?.toLowerCase() === "fruits"
+    (item) => item.category?.toLowerCase() === "veggies"
   );
 
   const increment = (id: string) => {
