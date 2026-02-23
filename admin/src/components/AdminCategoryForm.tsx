@@ -185,7 +185,6 @@ export default function AdminCategoryForm({ onDone }: Props) {
     );
   }
 
-  /* ================= FORM ================= */
 
   return (
     <form

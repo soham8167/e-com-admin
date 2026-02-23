@@ -12,6 +12,7 @@ const allowedOrigins = [
   "https://e-com-admin-aahr.vercel.app",
   "https://e-com-admin-rho.vercel.app",
   "http://localhost:5173",
+  "http://localhost:5174",
 ];
 
 app.use(
