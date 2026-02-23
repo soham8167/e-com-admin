@@ -52,7 +52,7 @@
 
 
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { api } from "../../api/axios";
 
 interface CategoryData {
   _id: string;
@@ -67,17 +67,17 @@ const Catagory = () => {
     fetchCategories();
   }, []);
 
-  const fetchCategories = async () => {
-    try {
-      const res = await axios.get(
-        "https://e-com-admin-3.onrender.com/api/categories"
-      );
-      setCategories(res.data);
-    } catch (error) {
-      console.log("Error fetching categories", error);
-    }
-  };
+ const fetchCategories = async () => {
+  try {
+    const res = await api.get("/categories");
 
+    console.log("API DATA:", res.data); // 👈 you wanted console data
+
+    setCategories(res.data);
+  } catch (error) {
+    console.log("Error fetching categories", error);
+  }
+};
   return (
     <div className="flex justify-center w-full px-2 sm:px-10">
       <div className="grid grid-cols-2 sm:grid-cols-7 gap-6 sm:gap-10 py-6 bg-[#81C157] rounded-3xl w-full">

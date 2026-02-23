@@ -39,7 +39,7 @@ export default function AdminDashboard() {
   const loadProducts = async () => {
     try {
       const res = await api.get("/products");
-      setProducts(res.data);
+      setProducts(res.data); 
     } finally {
       setLoading(false);
     }

@@ -40,7 +40,7 @@ r.get("/", async (req, res) => {
   }
 });
 
-/* ================= UPDATE ================= */
+/* UPDATE  */
 
 r.put("/:id", auth, upload.single("image"), async (req, res) => {
   try {
@@ -65,7 +65,7 @@ r.put("/:id", auth, upload.single("image"), async (req, res) => {
   }
 });
 
-/* ================= DELETE ================= */
+/*  DELETE */
 
 r.delete("/:id", auth, async (req, res) => {
   await Product.findByIdAndDelete(req.params.id);
