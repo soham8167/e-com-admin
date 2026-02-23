@@ -121,7 +121,7 @@ const Card = () => {
   const { products, loading } = useProducts();
   const [quantities, setQuantities] = useState<Record<string, number>>({});
 
-  // ✅ FILTER ONLY BEST SELLERS
+  //  FILTER ONLY BEST SELLERS
   const bestSellerProducts = products.filter(
     (item) => item.category?.toLowerCase() === "best sellers"
   );
