@@ -18,7 +18,7 @@ const multer = require("multer");
 const path = require("path");
 
 
-/* ================= STORAGE ================= */
+/*  STORAGE */
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -33,7 +33,7 @@ const storage = multer.diskStorage({
   }
 });
 
-/* ================= FILE FILTER ================= */
+/* FILE FILTER  */
 
 function fileFilter(req, file, cb) {
   const allowed = /jpeg|jpg|png|webp/;
@@ -51,12 +51,12 @@ function fileFilter(req, file, cb) {
   cb(new Error("Only JPG, JPEG, PNG, WEBP images allowed"));
 }
 
-/* ================= UPLOAD CONFIG ================= */
+/*  UPLOAD CONFIG  */
 
 const upload = multer({
   storage,
   limits: {
-    fileSize: 2 * 1024 * 1024 // ✅ 2MB
+    fileSize: 2 * 1024 * 1024 
   },
   fileFilter
 });
