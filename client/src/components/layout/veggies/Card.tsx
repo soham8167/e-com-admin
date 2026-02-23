@@ -9,7 +9,7 @@ const Card = () => {
   const navigate = useNavigate();
   const [quantities, setQuantities] = useState<Record<string, number>>({});
 
-  // ✅ FILTER ONLY VEGGIES CATEGORY
+  // FILTER ONLY VEGGIES CATEGORY
   const veggieProducts = products.filter(
     (item) => item.category?.toLowerCase() === "veggies"
   );
@@ -33,7 +33,7 @@ const Card = () => {
   return (
     <div className="flex flex-wrap gap-8 justify-center m-5">
       {veggieProducts.map((item, index) => {
-        // 🔥 Special Card (index 1)
+        //  Special Card (index 1)
         if (index === 1) {
           return (
             <div

@@ -257,7 +257,7 @@ const Card = () => {
           );
         }
 
-        // 🔥 Normal Products
+        //  Normal Products
         return (
           <motion.div
             key={item._id}
