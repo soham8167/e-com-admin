@@ -3,7 +3,7 @@ const Category = require("../models/Category");
 const upload = require("../middlewares/upload");
 const auth = require("../middlewares/authmiddleware");
 
-// ================= CREATE CATEGORY =================
+// CREATE CATEGORY 
 
 r.post("/", auth, upload.single("image"), async (req, res) => {
   try {

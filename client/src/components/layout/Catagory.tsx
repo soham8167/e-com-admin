@@ -71,7 +71,7 @@ const Catagory = () => {
   try {
     const res = await api.get("/categories");
 
-    console.log("API DATA:", res.data); // 👈 you wanted console data
+    console.log("API DATA:", res.data); 
 
     setCategories(res.data);
   } catch (error) {

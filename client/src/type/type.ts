@@ -1,6 +1,6 @@
 // for counting type
 
-export interface NavState{
+export interface NavState{ 
     isOpen:boolean;
     toggleMenu:() => void;
 }
@@ -50,5 +50,3 @@ export interface SeasonalStoreState {
   increment: (id: number) => void;
   decrement: (id: number) => void;
 }
-
-
