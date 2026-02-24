@@ -129,7 +129,7 @@ const Card = () => {
   const increment = (id: string) => {
     setQuantities((prev) => ({
       ...prev,
-      [id]: (prev[id] || 1) + 1,
+      [id]: (prev[id] || 1) + 1, 
     }));
   };
 
@@ -164,7 +164,7 @@ const Card = () => {
                 <img
                   src={item.image}
                   alt={item.title}
-                  className="h-40 w-40 object-contain"
+                  className="h-40 w-40 object-contain" 
                 />
               </div>
 

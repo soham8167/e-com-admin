@@ -1,75 +1,117 @@
-const r = require("express").Router();
+const router = require("express").Router();
 const Product = require("../models/Productmodel");
 const auth = require("../middlewares/authmiddleware");
 const upload = require("../middlewares/upload");
+const cloudinary = require("../config/cloudinary");
+const streamifier = require("streamifier");
 
-let BASE_URL = "";
-
-r.post("/", auth, upload.single("image"), async (req, res) => {
+// CREATE PRODUCT
+router.post("/", auth, upload.single("image"), async (req, res) => {
   try {
+    if (!req.file) return res.status(400).json({ msg: "Image required" });
+
+    // Upload image to Cloudinary
+    const uploadFromBuffer = () =>
+      new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: "products" },
+          (err, result) => (result ? resolve(result) : reject(err))
+        );
+        streamifier.createReadStream(req.file.buffer).pipe(stream);
+      });
+
+    const result = await uploadFromBuffer();
+
     const product = await Product.create({
       title: req.body.title,
       price: Number(req.body.price),
       description: req.body.description || "",
       category: req.body.category,
-
-      image: req.file
-        ? `${process.env.ENVIRONMENT === "production" ? "https://e-com-admin-3.onrender.com" : "http://localhost:5000"}/uploads/${req.file.filename}`
-        : "",
+      image: result.secure_url,
+      public_id: result.public_id,
     });
 
-    res.json(product);
+    res.status(201).json(product);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ msg: err.message });
   }
 });
 
-/*  LIST  */
-
-r.get("/", async (req, res) => {
+// LIST PRODUCTS
+router.get("/", async (req, res) => {
   try {
-    const { category } = req.query;
+    const filter =
+      req.query.category && req.query.category !== "all"
+        ? { category: req.query.category }
+        : {};
 
-    const filter = category && category !== "all" ? { category } : {};
-
-    const list = await Product.find(filter).sort({ createdAt: -1 });
-
-    res.json(list);
+    const products = await Product.find(filter).sort({ createdAt: -1 });
+    res.json(products);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ msg: err.message });
   }
 });
 
-/* UPDATE  */
-
-r.put("/:id", auth, upload.single("image"), async (req, res) => {
+// UPDATE PRODUCT
+router.put("/:id", auth, upload.single("image"), async (req, res) => {
   try {
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).json({ msg: "Product not found" });
+
     const data = {
-      title: req.body.title,
-      price: Number(req.body.price),
-      description: req.body.description,
-      category: req.body.category,
-    };
+  title: req.body.title,
+  price: Number(req.body.price),
+  description: req.body.description,
+  category: req.body.category,
+};
 
     if (req.file) {
-      data.image = `${process.env.ENVIRONMENT === "production" ? "https://e-com-admin-3.onrender.com" : "http://localhost:5000"}/uploads/${req.file.filename}`;
+      // Delete old image from Cloudinary
+      if (product.public_id) {
+        await cloudinary.uploader.destroy(product.public_id);
+      }
+
+      const uploadFromBuffer = () =>
+        new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            { folder: "products" },
+            (err, result) => (result ? resolve(result) : reject(err))
+          );
+          streamifier.createReadStream(req.file.buffer).pipe(stream);
+        });
+
+      const result = await uploadFromBuffer();
+      data.image = result.secure_url;
+      data.public_id = result.public_id;
     }
 
-    const updated = await Product.findByIdAndUpdate(req.params.id, data, {
-      new: true,
-    });
-
+    const updated = await Product.findByIdAndUpdate(req.params.id, data, { new: true });
     res.json(updated);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ msg: err.message });
   }
 });
 
-/*  DELETE */
+// DELETE PRODUCT
+router.delete("/:id", auth, async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).json({ msg: "Product not found" });
 
-r.delete("/:id", auth, async (req, res) => {
-  await Product.findByIdAndDelete(req.params.id);
-  res.json({ msg: "deleted" });
+    // Delete image from Cloudinary
+    if (product.public_id) {
+      await cloudinary.uploader.destroy(product.public_id);
+    }
+
+    await product.deleteOne();
+    res.json({ msg: "Deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: err.message });
+  }
 });
 
-module.exports = r;
+module.exports = router;

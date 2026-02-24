@@ -1,8 +1,8 @@
 import bgimg from "../assets/images/Rectangle 122.png";
-import Card from "../components/layout/veggies/Card";
+import Card from "../components/layout/fruits/Card";
 import Catagory from "../components/layout/veggies/Catatory";
 
-const Veggies = () => {
+const Fruits = () => {
   return (
     <div className="pt-20 flex flex-col items-center mt-15">
   <div
@@ -26,4 +26,4 @@ const Veggies = () => {
   );
 };
 
-export default Veggies;
+export default Fruits;

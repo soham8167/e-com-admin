@@ -1,5 +1,6 @@
 import bgimg from "../assets/images/Rectangle 122.png";
-import Card from "../components/layout/veggies/Card";
+import Card from "../components/layout/combo/Card";
+
 import Catagory from "../components/layout/veggies/Catatory";
 
 const Veggies = () => {

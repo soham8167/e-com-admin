@@ -19,19 +19,23 @@ const productSchema = new mongoose.Schema(
       required: true
     },
 
+    public_id: {        
+      type: String,
+      required: true
+    },
+
     description: {
       type: String,
       default: ""
     },
 
-   
     category: {
       type: String,
       required: true,
       lowercase: true,
       index: true
     },
-   
+
     isActive: {
       type: Boolean,
       default: true

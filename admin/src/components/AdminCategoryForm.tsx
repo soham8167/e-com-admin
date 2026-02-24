@@ -26,7 +26,7 @@ export default function AdminCategoryForm({ onDone }: Props) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
 
-
+  // Load categories
   const loadCategories = async () => {
     try {
       const res = await api.get("/categories");
@@ -40,7 +40,7 @@ export default function AdminCategoryForm({ onDone }: Props) {
     loadCategories();
   }, []);
 
-
+  // Close dropdown when clicked outside
   useEffect(() => {
     const handler = (e: any) => {
       if (!dropdownRef.current?.contains(e.target)) {
@@ -51,7 +51,7 @@ export default function AdminCategoryForm({ onDone }: Props) {
     return () => document.removeEventListener("click", handler);
   }, []);
 
-
+  // Handle image selection & validation
   const handleImage = (file: File | null) => {
     setImage(null);
     setPreview("");
@@ -78,7 +78,6 @@ export default function AdminCategoryForm({ onDone }: Props) {
     setPreview(URL.createObjectURL(file));
   };
 
-
   const reset = () => {
     setName("");
     setImage(null);
@@ -88,34 +87,32 @@ export default function AdminCategoryForm({ onDone }: Props) {
     if (fileRef.current) fileRef.current.value = "";
   };
 
-
   const submit = async (e: any) => {
     e.preventDefault();
-
     if (!name.trim()) return toast.warning("Category name required");
     if (!image) return toast.warning("Category image required");
     if (imageError) return toast.error(imageError);
 
     try {
       setLoading(true);
-
       const data = new FormData();
       data.append("name", name.trim().toLowerCase());
       data.append("image", image);
 
-      await api.post("/categories", data);
+      await api.post("/categories", data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
       toast.success("Category created");
       reset();
       loadCategories();
       onDone();
     } catch (e: any) {
-      toast.error(e?.response?.data?.error || "Create failed");
+      toast.error(e?.response?.data?.message || "Create failed");
     } finally {
       setLoading(false);
     }
   };
-
 
   const deleteCategory = async (id: string) => {
     try {
@@ -128,18 +125,17 @@ export default function AdminCategoryForm({ onDone }: Props) {
     }
   };
 
-
+  // UI
   if (!open) {
     return (
       <>
         <button
           onClick={() => setOpen(true)}
-          className="w-full bg-gray-300 py-2 rounded cursor-pointer "
+          className="w-full bg-gray-300 py-2 rounded cursor-pointer"
         >
           + Add Category
         </button>
 
-        {/* ===== CATEGORY DROPDOWN ===== */}
         <div className="mt-4 relative" ref={dropdownRef}>
           <button
             onClick={() => setShowDropdown(!showDropdown)}
@@ -152,15 +148,12 @@ export default function AdminCategoryForm({ onDone }: Props) {
           {showDropdown && (
             <div className="absolute w-full bg-gray-300 border border-gray-700 rounded mt-2 max-h-64 overflow-y-auto z-50">
               {categories.length === 0 && (
-                <p className="p-3 text-sm text-gray-400">
-                  No categories found
-                </p>
+                <p className="p-3 text-sm text-gray-400">No categories found</p>
               )}
-
-              {categories.map(cat => (
+              {categories.map((cat) => (
                 <div
                   key={cat._id}
-                  className="flex items-center justify-between p-3  border-b border-gray-700"
+                  className="flex items-center justify-between p-3 border-b border-gray-700"
                 >
                   <div className="flex items-center gap-3">
                     <img
@@ -185,7 +178,6 @@ export default function AdminCategoryForm({ onDone }: Props) {
     );
   }
 
-
   return (
     <form
       onSubmit={submit}
@@ -197,7 +189,7 @@ export default function AdminCategoryForm({ onDone }: Props) {
         className="w-full p-2 rounded text-black border"
         placeholder="Category name"
         value={name}
-        onChange={e => setName(e.target.value)}
+        onChange={(e) => setName(e.target.value)}
         disabled={loading}
       />
 
@@ -205,14 +197,12 @@ export default function AdminCategoryForm({ onDone }: Props) {
         ref={fileRef}
         type="file"
         accept="image/jpeg,image/png,image/webp"
-        onChange={e => handleImage(e.target.files?.[0] || null)}
+        onChange={(e) => handleImage(e.target.files?.[0] || null)}
         disabled={loading}
         className="text-sm"
       />
 
-      {imageError && (
-        <p className="text-red-500 text-xs">{imageError}</p>
-      )}
+      {imageError && <p className="text-red-500 text-xs">{imageError}</p>}
 
       {preview && (
         <img
