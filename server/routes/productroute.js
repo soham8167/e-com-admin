@@ -2,7 +2,7 @@ const router = require("express").Router();
 const Product = require("../models/Productmodel");
 const auth = require("../middlewares/authmiddleware");
 const upload = require("../middlewares/upload");
-const cloudinary = require("../config/cloudinary");
+const cloudinary = require("../config/cloudinary"); 
 const streamifier = require("streamifier");
 
 // CREATE PRODUCT
@@ -87,7 +87,7 @@ router.put("/:id", auth, upload.single("image"), async (req, res) => {
       data.public_id = result.public_id;
     }
 
-    const updated = await Product.findByIdAndUpdate(req.params.id, data, { new: true });
+    const updated = await Product.findByIdAndUpdate(req.params.id, data, { returnDocument: "after" });
     res.json(updated);
   } catch (err) {
     console.error(err);

@@ -1,60 +1,45 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { api } from "../api/axios";
 import { toast } from "react-toastify";
-
-interface Props {
-  onDone: () => void;
-}
 
 interface Category {
   _id: string;
   name: string;
-  image: string;
+  image?: string;
 }
 
-export default function AdminCategoryForm({ onDone }: Props) {
+interface Props {
+  onDone: () => void;
+  onClose: () => void;
+  category?: Category; 
+}
+
+export default function AdminCategoryForm({
+  onDone,
+  onClose,
+  category,
+}: Props) {
   const fileRef = useRef<HTMLInputElement | null>(null);
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+  const isEdit = !!category;
 
   const [name, setName] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState("");
   const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
   const [imageError, setImageError] = useState("");
 
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [showDropdown, setShowDropdown] = useState(false);
 
-  // Load categories
-  const loadCategories = async () => {
-    try {
-      const res = await api.get("/categories");
-      setCategories(res.data);
-    } catch {
-      toast.error("Failed to load categories");
+  useEffect(() => {
+    if (category) {
+      setName(category.name);
+      setPreview(category.image || "");
     }
-  };
+  }, [category]);
 
-  useEffect(() => {
-    loadCategories();
-  }, []);
-
-  // Close dropdown when clicked outside
-  useEffect(() => {
-    const handler = (e: any) => {
-      if (!dropdownRef.current?.contains(e.target)) {
-        setShowDropdown(false);
-      }
-    };
-    document.addEventListener("click", handler);
-    return () => document.removeEventListener("click", handler);
-  }, []);
-
-  // Handle image selection & validation
+  // Handle image validation
   const handleImage = (file: File | null) => {
     setImage(null);
-    setPreview("");
     setImageError("");
 
     if (!file) return;
@@ -83,150 +68,150 @@ export default function AdminCategoryForm({ onDone }: Props) {
     setImage(null);
     setPreview("");
     setImageError("");
-    setOpen(false);
     if (fileRef.current) fileRef.current.value = "";
   };
 
-  const submit = async (e: any) => {
+  const handleCancel = () => {
+    reset();
+    onClose();
+  };
+
+  //  Submit (Create + Update)
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!name.trim()) return toast.warning("Category name required");
-    if (!image) return toast.warning("Category image required");
     if (imageError) return toast.error(imageError);
 
     try {
       setLoading(true);
+
       const data = new FormData();
       data.append("name", name.trim().toLowerCase());
-      data.append("image", image);
 
-      await api.post("/categories", data, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      // Only append image if new image selected
+      if (image) {
+        data.append("image", image);
+      }
 
-      toast.success("Category created");
+      if (isEdit && category) {
+        // 🔥 UPDATE
+        await api.put(`/categories/${category._id}`, data);
+        toast.success("Category updated");
+      } else {
+        // 🔥 CREATE
+        if (!image) return toast.warning("Category image required");
+        await api.post("/categories", data, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        toast.success("Category created");
+      }
+
       reset();
-      loadCategories();
       onDone();
+      onClose();
     } catch (e: any) {
-      toast.error(e?.response?.data?.message || "Create failed");
+      toast.error(e?.response?.data?.msg || "Operation failed");
     } finally {
       setLoading(false);
     }
   };
 
-  const deleteCategory = async (id: string) => {
-    try {
-      await api.delete(`/categories/${id}`);
-      toast.success("Category deleted");
-      loadCategories();
-      onDone();
-    } catch {
-      toast.error("Delete failed");
-    }
-  };
+  return (
+    <form onSubmit={submit} className="space-y-4">
+      {/* Name */}
+      <div>
+        <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">
+          Category Name <span className="text-red-400">*</span>
+        </label>
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="ex. Veggies"
+          disabled={loading}
+          className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 transition disabled:opacity-60"
+        />
+      </div>
 
-  // UI
-  if (!open) {
-    return (
-      <>
-        <button
-          onClick={() => setOpen(true)}
-          className="w-full bg-gray-300 py-2 rounded cursor-pointer"
+      {/* Image */}
+      <div>
+        <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">
+          Image {!isEdit && <span className="text-red-400">*</span>}
+        </label>
+
+        <label
+          className={`flex flex-col items-center justify-center border-2 border-dashed rounded-xl cursor-pointer transition-all overflow-hidden
+          ${imageError ? "border-red-300 bg-red-50" : "border-gray-200 hover:border-gray-400 hover:bg-gray-50"}
+          ${preview ? "h-36" : "h-28"}`}
         >
-          + Add Category
-        </button>
-
-        <div className="mt-4 relative" ref={dropdownRef}>
-          <button
-            onClick={() => setShowDropdown(!showDropdown)}
-            className="w-full bg-gray-300 p-3 rounded flex justify-between items-center"
-          >
-            <span className="cursor-pointer">View Categories</span>
-            <span>▼</span>
-          </button>
-
-          {showDropdown && (
-            <div className="absolute w-full bg-gray-300 border border-gray-700 rounded mt-2 max-h-64 overflow-y-auto z-50">
-              {categories.length === 0 && (
-                <p className="p-3 text-sm text-gray-400">No categories found</p>
-              )}
-              {categories.map((cat) => (
-                <div
-                  key={cat._id}
-                  className="flex items-center justify-between p-3 border-b border-gray-700"
-                >
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={cat.image}
-                      className="h-8 w-8 object-cover rounded"
-                    />
-                    <span className="capitalize">{cat.name}</span>
-                  </div>
-
-                  <button
-                    onClick={() => deleteCategory(cat._id)}
-                    className="bg-red-500 text-white px-2 py-1 text-xs rounded hover:bg-red-700"
-                  >
-                    Delete
-                  </button>
-                </div>
-              ))}
+          {preview ? (
+            <img
+              src={preview}
+              alt="preview"
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <div className="flex flex-col items-center gap-2 text-gray-400">
+              <span className="text-xs font-medium">
+                Click to upload image
+              </span>
+              <span className="text-[10px]">
+                JPG, PNG, WEBP · max 2MB
+              </span>
             </div>
           )}
-        </div>
-      </>
-    );
-  }
 
-  return (
-    <form
-      onSubmit={submit}
-      className="bg-gray-200 p-4 rounded mt-4 space-y-3"
-    >
-      <h3 className="font-semibold text-sm">Create Category</h3>
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            className="hidden"
+            disabled={loading}
+            onChange={(e) =>
+              handleImage(e.target.files?.[0] || null)
+            }
+          />
+        </label>
 
-      <input
-        className="w-full p-2 rounded text-black border"
-        placeholder="Category name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        disabled={loading}
-      />
+        {imageError && (
+          <p className="mt-1.5 text-xs text-red-500">
+            {imageError}
+          </p>
+        )}
 
-      <input
-        ref={fileRef}
-        type="file"
-        accept="image/jpeg,image/png,image/webp"
-        onChange={(e) => handleImage(e.target.files?.[0] || null)}
-        disabled={loading}
-        className="text-sm"
-      />
+        {preview && (
+          <button
+            type="button"
+            onClick={() => {
+              setImage(null);
+              setPreview("");
+              if (fileRef.current) fileRef.current.value = "";
+            }}
+            className="mt-1.5 text-xs text-gray-400 hover:text-gray-700 underline"
+          >
+            Remove image
+          </button>
+        )}
+      </div>
 
-      {imageError && <p className="text-red-500 text-xs">{imageError}</p>}
+      {/* Footer */}
+      <div className="flex justify-end gap-2 pt-1">
+        <button
+          type="button"
+          onClick={handleCancel}
+          disabled={loading}
+          className="px-4 py-2 rounded-xl text-sm text-gray-600 hover:bg-gray-100 transition disabled:opacity-50"
+        >
+          Cancel
+        </button>
 
-      {preview && (
-        <img
-          src={preview}
-          className="h-20 w-20 object-cover rounded border"
-        />
-      )}
-
-      <div className="flex gap-2">
         <button
           type="submit"
           disabled={loading || !!imageError}
-          className="cursor-pointer flex-1 bg-blue-600 py-2 rounded hover:bg-blue-700"
+          className="px-5 py-2 rounded-xl bg-gray-900 text-white text-sm font-semibold hover:bg-gray-700 transition disabled:opacity-50 flex items-center gap-1.5"
         >
-          {loading ? "Saving..." : "Save"}
-        </button>
-
-        <button
-          type="button"
-          onClick={reset}
-          disabled={loading}
-          className="cursor-pointer flex-1 bg-gray-400 py-2 rounded hover:bg-gray-700"
-        >
-          Cancel
+          {loading ? "Saving..." : isEdit ? "Update Category" : "Save Category"}
         </button>
       </div>
     </form>

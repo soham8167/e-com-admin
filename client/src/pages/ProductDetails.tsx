@@ -30,7 +30,7 @@ const ProductDetails = () => {
     "description" | "nutrition" | "recipes"
   >("description");
 
-  // ✅ Fetch Single Product from Backend
+  // Fetch Single Product from Backend
   useEffect(() => {
     const fetchProduct = async () => {
       try {

@@ -2,8 +2,6 @@ const cloudinary = require("../config/cloudinary");
 const streamifier = require("streamifier");
 const Category = require("../models/Category");
 
-
-
 // CREATE CATEGORY
 exports.createCategory = async (req, res) => {
   try {
@@ -18,7 +16,7 @@ exports.createCategory = async (req, res) => {
       new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
           { folder: "categories" },
-          (error, result) => (result ? resolve(result) : reject(error))
+          (error, result) => (result ? resolve(result) : reject(error)),
         );
         streamifier.createReadStream(req.file.buffer).pipe(stream);
       });
@@ -51,7 +49,8 @@ exports.getCategories = async (req, res) => {
 exports.deleteCategory = async (req, res) => {
   try {
     const category = await Category.findById(req.params.id);
-    if (!category) return res.status(404).json({ message: "Category not found" });
+    if (!category)
+      return res.status(404).json({ message: "Category not found" });
 
     // Delete image from Cloudinary
     if (category.public_id) {
@@ -61,8 +60,6 @@ exports.deleteCategory = async (req, res) => {
     await category.deleteOne();
     res.json({ message: "Category deleted" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message }); 
   }
 };
-
-

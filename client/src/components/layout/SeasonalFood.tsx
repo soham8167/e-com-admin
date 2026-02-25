@@ -116,9 +116,9 @@ const SeasonalFood = () => {
   const { products, loading } = useProducts();
   const [quantities, setQuantities] = useState<Record<string, number>>({});
 
-  // 🔥 Filter only seasonal category
+  // Filter only seasonal category
   const seasonalProducts = products.filter(
-    (item) => item.category.toLowerCase() === "seasonal"
+    (item) => item?.category?.toLowerCase() === "seasonal"
   );
 
   const increment = (id: string) => {

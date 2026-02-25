@@ -7,9 +7,18 @@ interface Category {
   name: string;
 }
 
+interface Product {
+  _id: string;
+  title: string;
+  price: number;
+  description?: string;
+  category: string;
+  image?: string;
+}
+
 interface Props {
   onDone: () => void;
-  editData?: any;
+  editData?: Product | null;
   onCancelEdit?: () => void;
   categories: Category[];
 }
@@ -18,55 +27,60 @@ export default function AddProductForm({
   onDone,
   editData,
   onCancelEdit,
-  categories
+  categories,
 }: Props) {
-  const fileRef = useRef<HTMLInputElement | null>(null);
-  const [showForm, setShowForm] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
-  const [category, setCategory] = useState(""); 
-
+  const [category, setCategory] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState("");
   const [loading, setLoading] = useState(false);
   const [imageError, setImageError] = useState("");
+  const [dragOver, setDragOver] = useState(false);
 
-  // Pre-fill form when editing
   useEffect(() => {
     if (editData) {
-      setShowForm(true);
       setTitle(editData.title || "");
-      setPrice(editData.price || "");
+      setPrice(String(editData.price || ""));
       setDescription(editData.description || "");
-      setCategory(editData.category || ""); 
+      setCategory(editData.category || "");
       setPreview(editData.image || "");
+      setImage(null);
+      setImageError("");
+    } else {
+      setTitle("");
+      setPrice("");
+      setDescription("");
+      setCategory("");
+      setPreview("");
       setImage(null);
       setImageError("");
     }
   }, [editData]);
 
-  // Image validation & preview
-  const handleImageChange = (file: File | null) => {
+  const validateImage = (file: File | null) => {
     setImage(null);
     setPreview("");
     setImageError("");
-
     if (!file) return;
 
     const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
-    const allowedExt = [".jpg", ".jpeg", ".png", ".webp"];
     const ext = file.name.substring(file.name.lastIndexOf(".")).toLowerCase();
 
-    if (!allowedTypes.includes(file.type) || !allowedExt.includes(ext)) {
-      setImageError("Only JPG, JPEG, PNG, WEBP images are allowed");
+    if (
+      !allowedTypes.includes(file.type) ||
+      ![".jpg", ".jpeg", ".png", ".webp"].includes(ext)
+    ) {
+      setImageError("Only JPG, PNG or WEBP files are allowed.");
       if (fileRef.current) fileRef.current.value = "";
       return;
     }
 
     if (file.size > 2 * 1024 * 1024) {
-      setImageError("Image size must be less than 2MB");
+      setImageError("Image must be under 2 MB.");
       if (fileRef.current) fileRef.current.value = "";
       return;
     }
@@ -75,190 +89,233 @@ export default function AddProductForm({
     setPreview(URL.createObjectURL(file));
   };
 
-  // Reset form
   const reset = () => {
     setTitle("");
     setPrice("");
     setDescription("");
-    setCategory(""); 
+    setCategory("");
     setImage(null);
     setPreview("");
     setImageError("");
-    setShowForm(false);
-
     if (fileRef.current) fileRef.current.value = "";
-    onCancelEdit && onCancelEdit();
+    onCancelEdit?.();
   };
 
-  // Add or Update product
-  const submit = async (e: any) => {
+  const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     if (imageError) {
       toast.error(imageError);
       return;
     }
-
     if (!category) {
-      toast.error("Please select category");
+      toast.error("Please select a category.");
+      return;
+    }
+
+    const parsedPrice = parseFloat(price);
+    if (isNaN(parsedPrice) || parsedPrice <= 0) {
+      toast.error("Enter a valid price.");
       return;
     }
 
     try {
       setLoading(true);
-
-      const data = new FormData();
-      data.append("title", title);
-      data.append("price", price);
-      data.append("description", description);
-      data.append("category", category);
-      if (image) data.append("image", image);
+      const fd = new FormData();
+      fd.append("title", title);
+      fd.append("price", String(parsedPrice));
+      fd.append("description", description);
+      fd.append("category", category);
+      if (image) fd.append("image", image);
 
       if (editData) {
-        await api.put(`/products/${editData._id}`, data);
-        toast.success("Product updated successfully!");
+        await api.put(`/products/${editData._id}`, fd);
+        toast.success("Product updated!");
       } else {
-        await api.post("/products", data);
-        toast.success("Product added successfully!");
+        await api.post("/products", fd);
+        toast.success("Product added!");
       }
 
       reset();
       onDone();
     } catch (err: any) {
-      toast.error(err?.response?.data?.error || "Save failed");
+      toast.error(err?.response?.data?.error || "Save failed.");
     } finally {
       setLoading(false);
     }
   };
-
-  // Delete product with confirmation
-  const handleDelete = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this product?")) return;
-
-    try {
-      setLoading(true);
-      await api.delete(`/products/${id}`);
-      toast.success("Product deleted successfully!");
-      reset();
-      onDone();
-    } catch (err: any) {
-      toast.error(err?.response?.data?.error || "Delete failed");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Show Add Product button when form is hidden
-  if (!showForm) {
-    return (
-      <button
-        onClick={() => setShowForm(true)}
-        className="bg-black text-white px-5 py-3 rounded shadow hover:bg-gray-800"
-      >
-        + Add Product
-      </button>
-    );
-  }
 
   return (
-    <form
-      onSubmit={submit}
-      className="bg-white p-6 shadow-md rounded-md max-w-md mx-auto grid gap-4"
-    >
-      <h2 className="cursor-pointer text-lg font-semibold text-gray-800">
-        {editData ? "Update Product" : "Add Product"}
-      </h2>
+    <form onSubmit={submit} className="font-sans">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
+        {/* Title */}
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[11px] font-bold uppercase tracking-widest text-gray-400">
+            Product Title
+          </label>
+          <input
+            className="w-full px-3 py-2 rounded-lg border border-gray-200 bg-gray-50 text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+            placeholder="ex.  Headphones"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+          />
+        </div>
 
-      {/* Title */}
-      <input
-        required
-        placeholder="Product Title"
-        className="border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
-        value={title}
-        onChange={e => setTitle(e.target.value)}
-      />
+        {/* Price */}
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[11px] font-bold uppercase tracking-widest text-gray-400">
+            Price
+          </label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-semibold">
+              ₹
+            </span>
+            <input
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="00"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              className="w-full pl-7 pr-3 py-2 rounded-lg border border-gray-200 bg-gray-50 text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+              required
+            />
+          </div>
+        </div>
 
-      {/* Price */}
-      <input
-        required
-        type="number"
-        placeholder="Price"
-        className="border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
-        value={price}
-        onChange={e => setPrice(e.target.value)}
-      />
+        {/* Category */}
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[11px] font-bold uppercase tracking-widest text-gray-400">
+            Category
+          </label>
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="w-full px-3 py-2 rounded-lg border border-gray-200 bg-gray-50 text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+            required
+          >
+            <option value="" disabled>
+              Select a category
+            </option>
+            {categories.map((c) => (
+              <option key={c._id} value={c.name}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
-      {/* Category */}
-      <select
-        required
-        className="border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
-        value={category}
-        onChange={e => setCategory(e.target.value)}
-      >
-        <option value="">Select Category</option>
-        {categories.map(c => (
-          <option key={c._id} value={c.name}>{c.name}</option>
-        ))}
-      </select>
+        {/* Description */}
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[11px] font-bold uppercase tracking-widest text-gray-400">
+            Description
+          </label>
+          <textarea
+            placeholder="Short product description…"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="w-full px-3 py-2 rounded-lg border border-gray-200 bg-gray-50 text-sm min-h-[90px] resize-y focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+          />
+        </div>
 
-      {/* Image Upload */}
-      <div>
-        <input
-          ref={fileRef}
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          className="border border-gray-300 p-2 rounded w-full text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          onChange={e => handleImageChange(e.target.files?.[0] || null)}
-        />
-        {imageError && <p className="text-red-600 text-xs mt-1">{imageError}</p>}
-      </div>
+        {/* Image Upload */}
+        <div className="col-span-1 sm:col-span-2 flex flex-col gap-2">
+          <label className="text-[11px] font-bold uppercase tracking-widest text-gray-400">
+            Product Image
+          </label>
 
-      {/* Image Preview */}
-      {preview && (
-        <img
-          src={preview}
-          className="w-24 h-24 object-cover rounded border mt-2"
-        />
-      )}
+          <div
+            className={`relative flex items-center gap-4 p-4 rounded-xl border-2 border-dashed cursor-pointer transition ${
+              dragOver
+                ? "border-indigo-500 bg-indigo-50"
+                : "border-gray-200 bg-gray-50 hover:border-indigo-500 hover:bg-indigo-50"
+            }`}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragOver(true);
+            }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={(e) => {
+              e.preventDefault();
+              setDragOver(false);
+              validateImage(e.dataTransfer.files?.[0] || null);
+            }}
+          >
+            {preview ? (
+              <div className="relative w-16 h-16 rounded-lg overflow-hidden border border-gray-200">
+                <img
+                  src={preview}
+                  alt="preview"
+                  className="w-full h-full object-cover"
+                />
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
 
-      {/* Description */}
-      <textarea
-        required
-        placeholder="Description"
-        className="border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm resize-none h-24"
-        value={description}
-        onChange={e => setDescription(e.target.value)}
-      />
+                    setPreview("");
+                    setImage(null);
 
-      {/* Buttons */}
-      <div className="flex gap-2">
-        <button
-          disabled={loading || !!imageError}
-          className="cursor-pointer bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700 disabled:opacity-50 text-sm flex-1"
-        >
-          {loading ? "Saving..." : editData ? "Update" : "Save"}
-        </button>
+                    if (fileRef.current) {
+                      fileRef.current.value = "";
+                    }
+                  }}
+                  className="absolute top-1 right-1 z-10 w-4 h-4 text-[10px] bg-black/60 text-white rounded-full flex items-center justify-center cursor-pointer"
+                >
+                  ✕
+                </button>
+              </div>
+            ) : (
+              <div className="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-600"></div>
+            )}
 
-        {/* Delete Button */}
-        {editData && (
+            <div>
+              <p className="text-sm font-semibold text-gray-800">
+                {preview
+                  ? "Image selected — click to replace"
+                  : "Drop image here or click to browse"}
+              </p>
+              <p className="text-xs text-gray-400">JPG, PNG, WEBP · Max 2 MB</p>
+            </div>
+
+            <input
+              ref={fileRef}
+              type="file"
+              accept=".jpg,.jpeg,.png,.webp"
+              onChange={(e) => validateImage(e.target.files?.[0] || null)}
+              className="absolute inset-0 opacity-0 cursor-pointer"
+            />
+          </div>
+
+          {imageError && (
+            <p className="text-xs text-red-500 font-medium"> {imageError}</p>
+          )}
+        </div>
+
+        {/* Buttons */}
+        <div className="col-span-1 sm:col-span-2 flex gap-3 pt-4 border-t border-gray-100">
+          <button
+            type="submit"
+            disabled={loading || !!imageError}
+            className="flex-1 h-10 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 disabled:opacity-50 flex items-center justify-center gap-2 transition"
+          >
+            {loading
+              ? "Saving..."
+              : editData
+                ? "Update Product"
+                : "Add Product"}
+          </button>
+
           <button
             type="button"
-            onClick={() => handleDelete(editData._id)}
+            onClick={reset}
             disabled={loading}
-            className="cursor-pointer bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 text-sm flex-1"
+            className="h-10 px-5 bg-gray-100 text-gray-600 rounded-lg text-sm font-semibold hover:bg-gray-200 disabled:opacity-50 transition"
           >
-            Delete
+            Cancel
           </button>
-        )}
-
-        <button
-          type="button"
-          onClick={reset}
-          disabled={loading}
-          className="cursor-pointer border border-gray-300 py-2 px-4 rounded hover:bg-gray-100 text-sm flex-1"
-        >
-          Cancel
-        </button>
+        </div>
       </div>
     </form>
   );
