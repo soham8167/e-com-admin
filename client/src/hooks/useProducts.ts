@@ -8,11 +8,12 @@ export interface Product {
   description: string;
   image: string;
   category: string;
+  isBestSeller?: boolean;
 }
 
 export const useProducts = () => {
   const [products, setProducts] = useState<Product[]>([]); 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); 
 
   const fetchProducts = async () => {
     try {

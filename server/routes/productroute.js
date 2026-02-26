@@ -2,15 +2,15 @@ const router = require("express").Router();
 const Product = require("../models/Productmodel");
 const auth = require("../middlewares/authmiddleware");
 const upload = require("../middlewares/upload");
-const cloudinary = require("../config/cloudinary"); 
+const cloudinary = require("../config/cloudinary");
 const streamifier = require("streamifier");
+
 
 // CREATE PRODUCT
 router.post("/", auth, upload.single("image"), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ msg: "Image required" });
 
-    // Upload image to Cloudinary
     const uploadFromBuffer = () =>
       new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
@@ -29,6 +29,7 @@ router.post("/", auth, upload.single("image"), async (req, res) => {
       category: req.body.category,
       image: result.secure_url,
       public_id: result.public_id,
+      isBestSeller: req.body.isBestSeller === "true",
     });
 
     res.status(201).json(product);
@@ -37,6 +38,7 @@ router.post("/", auth, upload.single("image"), async (req, res) => {
     res.status(500).json({ msg: err.message });
   }
 });
+
 
 // LIST PRODUCTS
 router.get("/", async (req, res) => {
@@ -54,6 +56,22 @@ router.get("/", async (req, res) => {
   }
 });
 
+
+// BEST SELLERS API
+router.get("/best-sellers", async (req, res) => {
+  try {
+    const products = await Product.find({ isBestSeller: true })
+      .sort({ createdAt: -1 })
+      .limit(8);
+
+    res.json(products);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: err.message });
+  }
+});
+
+
 // UPDATE PRODUCT
 router.put("/:id", auth, upload.single("image"), async (req, res) => {
   try {
@@ -61,14 +79,15 @@ router.put("/:id", auth, upload.single("image"), async (req, res) => {
     if (!product) return res.status(404).json({ msg: "Product not found" });
 
     const data = {
-  title: req.body.title,
-  price: Number(req.body.price),
-  description: req.body.description,
-  category: req.body.category,
-};
+      title: req.body.title,
+      price: Number(req.body.price),
+      description: req.body.description,
+      category: req.body.category,
+
+      isBestSeller: req.body.isBestSeller === "true",
+    };
 
     if (req.file) {
-      // Delete old image from Cloudinary
       if (product.public_id) {
         await cloudinary.uploader.destroy(product.public_id);
       }
@@ -87,7 +106,12 @@ router.put("/:id", auth, upload.single("image"), async (req, res) => {
       data.public_id = result.public_id;
     }
 
-    const updated = await Product.findByIdAndUpdate(req.params.id, data, { returnDocument: "after" });
+    const updated = await Product.findByIdAndUpdate(
+      req.params.id,
+      data,
+      { returnDocument: "after" }
+    );
+
     res.json(updated);
   } catch (err) {
     console.error(err);
@@ -95,13 +119,13 @@ router.put("/:id", auth, upload.single("image"), async (req, res) => {
   }
 });
 
+
 // DELETE PRODUCT
 router.delete("/:id", auth, async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).json({ msg: "Product not found" });
 
-    // Delete image from Cloudinary
     if (product.public_id) {
       await cloudinary.uploader.destroy(product.public_id);
     }

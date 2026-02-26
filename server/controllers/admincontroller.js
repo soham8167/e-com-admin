@@ -20,7 +20,7 @@ exports.login = async (req, res) => {
   });
 
   res.json({ msg: "Login success" });
-};
+}; 
 
 exports.me = (req, res) => {
   res.json({ admin: req.admin });
@@ -33,4 +33,5 @@ exports.logout = (req, res) => {
   });
   res.json({ msg: "Logged out" });
 };
+
 

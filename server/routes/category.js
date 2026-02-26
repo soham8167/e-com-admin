@@ -47,9 +47,6 @@ r.get("/", async (req, res) => {
 });
 
 
-
-
-
 // UPDATE PRODUCT
 
 r.put("/:id", auth, upload.single("image"), async (req, res) => {

@@ -14,6 +14,7 @@ interface Product {
   description?: string;
   category: string;
   image?: string;
+  isBestSeller?: boolean;
 }
 
 interface Props {
@@ -40,6 +41,7 @@ export default function AddProductForm({
   const [loading, setLoading] = useState(false);
   const [imageError, setImageError] = useState("");
   const [dragOver, setDragOver] = useState(false);
+  const [isBestSeller, setIsBestSeller] = useState(false);
 
   useEffect(() => {
     if (editData) {
@@ -50,6 +52,7 @@ export default function AddProductForm({
       setPreview(editData.image || "");
       setImage(null);
       setImageError("");
+      setIsBestSeller(editData.isBestSeller || false);
     } else {
       setTitle("");
       setPrice("");
@@ -58,6 +61,7 @@ export default function AddProductForm({
       setPreview("");
       setImage(null);
       setImageError("");
+      setIsBestSeller(false);
     }
   }, [editData]);
 
@@ -125,6 +129,7 @@ export default function AddProductForm({
       fd.append("price", String(parsedPrice));
       fd.append("description", description);
       fd.append("category", category);
+      fd.append("isBestSeller", String(isBestSeller));
       if (image) fd.append("image", image);
 
       if (editData) {
@@ -140,7 +145,7 @@ export default function AddProductForm({
     } catch (err: any) {
       toast.error(err?.response?.data?.error || "Save failed.");
     } finally {
-      setLoading(false);
+      setLoading(false); 
     }
   };
 
@@ -292,7 +297,17 @@ export default function AddProductForm({
             <p className="text-xs text-red-500 font-medium"> {imageError}</p>
           )}
         </div>
-
+<div className="col-span-1 sm:col-span-2 flex items-center gap-3 pt-2">
+  <input
+    type="checkbox"
+    checked={isBestSeller}
+    onChange={(e) => setIsBestSeller(e.target.checked)}
+    className="w-4 h-4 accent-indigo-600"
+  />
+  <label className="text-sm font-medium text-gray-700">
+    Mark as Best Seller
+  </label>
+</div>
         {/* Buttons */}
         <div className="col-span-1 sm:col-span-2 flex gap-3 pt-4 border-t border-gray-100">
           <button

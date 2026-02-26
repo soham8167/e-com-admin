@@ -35,7 +35,10 @@ const productSchema = new mongoose.Schema(
       lowercase: true,
       index: true
     },
-
+ isBestSeller: {
+    type: Boolean,
+    default: false,
+  },
     isActive: {
       type: Boolean,
       default: true

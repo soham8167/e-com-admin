@@ -1,6 +1,3 @@
-
-
-
 import { Minus, Plus, ShoppingCart } from "lucide-react";
 import { motion } from "framer-motion";
 import { useProducts } from "../../hooks/useProducts";
@@ -10,15 +7,15 @@ const Card = () => {
   const { products, loading } = useProducts();
   const [quantities, setQuantities] = useState<Record<string, number>>({});
 
-  //  FILTER ONLY BEST SELLERS
+  //  FILTER USING isBestSeller FLAG
   const bestSellerProducts = products.filter(
-    (item) => item.category?.toLowerCase() === "best sellers"
+    (item) => item.isBestSeller
   );
 
   const increment = (id: string) => {
-    setQuantities((prev) => ({ 
+    setQuantities((prev) => ({
       ...prev,
-      [id]: (prev[id] || 1) + 1, 
+      [id]: (prev[id] || 1) + 1,
     }));
   };
 
@@ -43,6 +40,13 @@ const Card = () => {
             key={item._id}
             className="bg-[#FBF9F6] w-60 rounded-2xl p-4 shadow-md relative"
           >
+            {/* ✅ BEST SELLER BADGE */}
+            {item.isBestSeller && (
+              <span className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
+                Best Seller
+              </span>
+            )}
+
             <motion.div
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -53,7 +57,7 @@ const Card = () => {
                 <img
                   src={item.image}
                   alt={item.title}
-                  className="h-40 w-40 object-contain" 
+                  className="h-40 w-40 object-contain"
                 />
               </div>
 
@@ -79,7 +83,7 @@ const Card = () => {
 
                   <button
                     onClick={() => increment(item._id)}
-                   className="border rounded-full px-1 py-1 hover:bg-gray-100"
+                    className="border rounded-full px-1 py-1 hover:bg-gray-100"
                   >
                     <Plus size={12} />
                   </button>
