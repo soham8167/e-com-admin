@@ -19,7 +19,7 @@ const Catagory = () => {
  const fetchCategories = async () => {
   try {
     const res = await api.get("/categories");
-
+ 
     console.log("API DATA:", res.data); 
 
     setCategories(res.data);

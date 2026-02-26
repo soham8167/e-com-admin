@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 interface Category {
   _id: string;
   name: string;
-}
+} 
 
 interface Product {
   _id: string;

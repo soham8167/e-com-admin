@@ -16,7 +16,7 @@ const Card = () => {
   );
 
   const increment = (id: string) => {
-    setQuantities((prev) => ({
+    setQuantities((prev) => ({ 
       ...prev,
       [id]: (prev[id] || 1) + 1, 
     }));
@@ -68,7 +68,7 @@ const Card = () => {
                 <div className="flex items-center gap-4">
                   <button
                     onClick={() => decrement(item._id)}
-                    className="border rounded-full px-2"
+                    className="border rounded-full px-1 py-1 hover:bg-gray-100"
                   >
                     <Minus size={12} />
                   </button>
@@ -79,7 +79,7 @@ const Card = () => {
 
                   <button
                     onClick={() => increment(item._id)}
-                    className="border rounded-full px-2"
+                   className="border rounded-full px-1 py-1 hover:bg-gray-100"
                   >
                     <Plus size={12} />
                   </button>

@@ -105,7 +105,7 @@ const Card = () => {
                 <div className="flex items-center gap-4">
                   <button
                     onClick={() => decrement(item._id)}
-                    className="border rounded-full px-1 py-1 hover:bg-gray-100"
+                    className="border rounded-full px-1 py-1 hover:bg-gray-100" 
                   >
                     <Minus size={10} />
                   </button>

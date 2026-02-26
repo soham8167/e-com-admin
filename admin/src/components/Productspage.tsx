@@ -132,7 +132,7 @@ function CategoryDropdown({
 
             return (
               <button
-                key={option._id}
+                key={option._id}  
                 onClick={() => select(option)}
                 className={`w-full text-left px-4 py-2.5 text-sm font-medium transition ${
                   isSelected
@@ -252,7 +252,7 @@ export default function ProductsPage({
                     <img
                       src={p.image || "/no-image.png"}
                       alt={p.title}
-                      className="h-11 w-11 rounded-xl object-cover bg-gray-100"
+                      className="h-11 w-11 rounded-xl object-cover bg-gray-100" 
                     />
                   </td>
 
@@ -271,7 +271,7 @@ export default function ProductsPage({
                   </td>
 
                   <td className="px-5 py-4 text-right">
-                    <div className="flex justify-end gap-2">
+                    <div className="flex justify-end gap-2"> 
                       <button
                         onClick={() => openEdit(p)}
                         className="px-3 py-1.5 rounded-md bg-indigo-50 text-indigo-600 text-xs font-semibold hover:bg-indigo-100 transition"
@@ -292,7 +292,6 @@ export default function ProductsPage({
           </tbody>
         </table>
       </div>
-
       {/* Modal */}
       {showModal && (
         <ProductModal

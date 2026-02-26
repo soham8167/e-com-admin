@@ -12,7 +12,7 @@ interface Props {
   onDone: () => void;
   onClose: () => void;
   category?: Category; 
-}
+} 
 
 export default function AdminCategoryForm({
   onDone,
@@ -95,11 +95,11 @@ export default function AdminCategoryForm({
       }
 
       if (isEdit && category) {
-        // 🔥 UPDATE
+        //  UPDATE
         await api.put(`/categories/${category._id}`, data);
         toast.success("Category updated");
       } else {
-        // 🔥 CREATE
+        //  CREATE
         if (!image) return toast.warning("Category image required");
         await api.post("/categories", data, {
           headers: { "Content-Type": "multipart/form-data" },
@@ -141,10 +141,14 @@ export default function AdminCategoryForm({
         </label>
 
         <label
-          className={`flex flex-col items-center justify-center border-2 border-dashed rounded-xl cursor-pointer transition-all overflow-hidden
-          ${imageError ? "border-red-300 bg-red-50" : "border-gray-200 hover:border-gray-400 hover:bg-gray-50"}
-          ${preview ? "h-36" : "h-28"}`}
-        >
+  className={`flex flex-col items-center justify-center 
+  border-2 border-dashed rounded-xl cursor-pointer 
+  transition-all overflow-hidden h-32
+  ${imageError 
+    ? "border-red-300 bg-red-50" 
+    : "border-gray-200 hover:border-gray-400 hover:bg-gray-50"}
+  `}
+>
           {preview ? (
             <img
               src={preview}
