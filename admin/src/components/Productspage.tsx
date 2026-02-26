@@ -1,6 +1,4 @@
-
-
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { api } from "../api/axios";
 import AddProductForm from "./Addproductform";
 import { IconPlus } from "./icons/Adminicon";
@@ -67,6 +65,91 @@ function ProductModal({
   );
 }
 
+/* Category Dropdown */
+
+function CategoryDropdown({
+  categories,
+  activeCategory,
+  onChange,
+}: {
+  categories: Category[];
+  activeCategory: string;
+  onChange: (value: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  const allOptions = [{ _id: "all", name: "All" }, ...categories];
+
+  const selectedLabel =
+    activeCategory === "all"
+      ? "All"
+      : categories.find((c) => c.name === activeCategory)?.name ?? "All";
+
+  // Close on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const select = (option: Category) => {
+    onChange(option._id === "all" ? "all" : option.name);
+    setOpen(false);
+  };
+
+  return (
+    <div ref={ref} className="relative w-48">
+      {/* Trigger */}
+      <button
+        onClick={() => setOpen((prev) => !prev)}
+        className="w-full flex items-center justify-between gap-2 px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:border-gray-400 transition shadow-sm"
+      >
+        <span>{selectedLabel}</span>
+        <svg
+          className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {/* Dropdown */}
+      {open && (
+        <div className="absolute z-30 mt-2 w-full bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden">
+          {allOptions.map((option) => {
+            const isSelected =
+              option._id === "all"
+                ? activeCategory === "all"
+                : activeCategory === option.name;
+
+            return (
+              <button
+                key={option._id}
+                onClick={() => select(option)}
+                className={`w-full text-left px-4 py-2.5 text-sm font-medium transition ${
+                  isSelected
+                    ? "bg-gray-900 text-white"
+                    : "text-gray-700 hover:bg-gray-50"
+                }`}
+              >
+                {option.name}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* Products Page  */
 
 export default function ProductsPage({
@@ -111,9 +194,7 @@ export default function ProductsPage({
 
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-bold text-gray-900">
-          Products
-        </h1>
+        <h1 className="text-xl font-bold text-gray-900">Products</h1>
 
         <button
           onClick={openAdd}
@@ -123,30 +204,13 @@ export default function ProductsPage({
         </button>
       </div>
 
-      {/* Category Tabs */}
-      <div className="flex gap-2 mb-4 overflow-x-auto">
-        {[{ _id: "all", name: "All" }, ...realCategories].map((c) => {
-          const isActive =
-            c._id === "all"
-              ? activeCategory === "all"
-              : activeCategory === c.name;
-
-          return (
-            <button
-              key={c._id}
-              onClick={() =>
-                setActiveCategory(c._id === "all" ? "all" : c.name)
-              }
-              className={`px-4 py-1.5 rounded-full text-xs font-semibold border transition whitespace-nowrap ${
-                isActive
-                  ? "bg-gray-900 text-white border-gray-900"
-                  : "bg-white text-gray-500 border-gray-200 hover:border-gray-400 hover:text-gray-900"
-              }`}
-            >
-              {c.name}
-            </button>
-          );
-        })}
+      {/* Category Dropdown */}
+      <div className="mb-4">
+        <CategoryDropdown
+          categories={realCategories}
+          activeCategory={activeCategory}
+          onChange={setActiveCategory}
+        />
       </div>
 
       {/* Table */}

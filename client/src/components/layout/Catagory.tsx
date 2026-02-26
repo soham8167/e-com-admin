@@ -10,7 +10,7 @@ interface CategoryData {
 }
 
 const Catagory = () => {
-  const [categories, setCategories] = useState<CategoryData[]>([]);
+  const [categories, setCategories] = useState<CategoryData[]>([]); 
 
   useEffect(() => {
     fetchCategories();

@@ -7,11 +7,11 @@ import { useState } from "react";
 const Card = () => {
   const { products, loading } = useProducts();
   const navigate = useNavigate();
-  const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const [quantities, setQuantities] = useState<Record<string, number>>({}); 
 
   //  FILTER ONLY FRUITS CATEGORY
   const fruitProducts = products.filter(
-  (item) => item.category?.toLowerCase() === "fruits"
+  (item) => item.category?.toLowerCase() === "fruits" 
 );
 
 

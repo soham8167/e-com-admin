@@ -12,8 +12,9 @@ import {
 
 const NAV_ITEMS: { label: string; icon: JSX.Element; path: string }[] = [
   { label: "Dashboard",  icon: <IconGrid />,   path: "/dashboard" },
-  { label: "Products",   icon: <IconBox />,    path: "/products" },
+ 
   { label: "Categories", icon: <IconFolder />, path: "/categories" },
+   { label: "Products",   icon: <IconBox />,    path: "/products" },
 ];
 
 // ─── AdminLayout 
@@ -36,12 +37,12 @@ export default function AdminLayout() {
         fontFamily: "'DM Sans', 'Nunito Sans', system-ui, sans-serif",
       }}
     >
-      {/* ── SIDEBAR ── */}
+      {/* SIDEBAR */}
       <aside
         className="shrink-0 flex flex-col bg-white border-r border-gray-100 transition-all duration-300 overflow-hidden"
         style={{ width: sidebarOpen ? 220 : 0 }}
       >
-        {/* Logo */}
+      
         <div className="h-14 flex items-center gap-3 px-5 border-b border-gray-100 shrink-0">
           <span className="font-bold text-sm text-gray-900 whitespace-nowrap tracking-tight">
             E-Commerce Admin
