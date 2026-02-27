@@ -23,10 +23,11 @@ const Signup = () => {
     terms: "",
   });
 
+  const [loading, setLoading] = useState(false);
+
   const validName = (name: string) => {
     const trimmedName = name.trim();
     const nameRegex = /^[A-Za-z]+$/;
-
     if (!nameRegex.test(trimmedName)) return false;
     return trimmedName[0] === trimmedName[0].toUpperCase();
   };
@@ -42,7 +43,7 @@ const Signup = () => {
     }));
   };
 
-  const handleSignup = (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
 
     let newErrors = {
@@ -89,19 +90,39 @@ const Signup = () => {
     setErrors(newErrors);
     if (!isValid) return;
 
-    localStorage.setItem(
-      "user",
-      JSON.stringify({
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        mobile: formData.mobile,
-        password: formData.password,
-      })
-    );
+    try {
+      setLoading(true);
 
-    alert("Signup successfully");
-    navigate("/login");
+      const res = await fetch("http://localhost:5000/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          mobile: formData.mobile,
+          password: formData.password,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "Signup failed");
+        return;
+      }
+
+      alert("Signup successful");
+      navigate("/login");
+
+    } catch (error) {
+      console.error(error);
+      alert("Server error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -123,7 +144,6 @@ const Signup = () => {
 
         <form onSubmit={handleSignup}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-            {/* First Name */}
             <div>
               <label className="text-sm text-gray-600">First Name</label>
               <input
@@ -135,7 +155,6 @@ const Signup = () => {
               <p className="text-red-500 text-sm">{errors.firstName}</p>
             </div>
 
-            {/* Last Name */}
             <div>
               <label className="text-sm text-gray-600">Last Name</label>
               <input
@@ -146,7 +165,6 @@ const Signup = () => {
               />
             </div>
 
-            {/* Email */}
             <div>
               <label className="text-sm text-gray-600">Email ID</label>
               <input
@@ -158,7 +176,6 @@ const Signup = () => {
               <p className="text-red-500 text-sm">{errors.email}</p>
             </div>
 
-            {/* Mobile */}
             <div>
               <label className="text-sm text-gray-600">Mobile Number</label>
               <input
@@ -169,7 +186,6 @@ const Signup = () => {
               />
             </div>
 
-            {/* Password */}
             <div>
               <label className="text-sm text-gray-600">Password</label>
               <input
@@ -181,37 +197,18 @@ const Signup = () => {
               <p className="text-red-500 text-sm">{errors.password}</p>
             </div>
 
-            {/* Confirm Password */}
             <div>
-              <label className="text-sm text-gray-600">
-                Confirm Password
-              </label>
+              <label className="text-sm text-gray-600">Confirm Password</label>
               <input
                 type="password"
                 name="confirmPassword"
                 onChange={handleChange}
                 className="w-full mt-1 px-3 py-2 border rounded"
               />
-              <p className="text-red-500 text-sm">
-                {errors.confirmPassword}
-              </p>
-            </div>
-
-            {/* Referral */}
-            <div className="sm:col-span-2">
-              <label className="text-sm text-gray-600">
-                Referral Code (optional)
-              </label>
-              <input
-                type="text"
-                name="referral"
-                onChange={handleChange}
-                className="w-full mt-1 px-3 py-2 border rounded"
-              />
+              <p className="text-red-500 text-sm">{errors.confirmPassword}</p>
             </div>
           </div>
 
-          {/* Terms */}
           <div className="flex items-center gap-2 mt-4">
             <input
               type="checkbox"
@@ -220,10 +217,7 @@ const Signup = () => {
               className="w-4 h-4 accent-green-600"
             />
             <span className="text-sm">
-              I accept the{" "}
-              <span className="text-green-600 cursor-pointer">
-                terms & conditions
-              </span>
+              I accept the terms & conditions
             </span>
           </div>
 
@@ -231,9 +225,10 @@ const Signup = () => {
 
           <button
             type="submit"
+            disabled={loading}
             className="mt-6 bg-green-600 text-white px-8 py-2 rounded hover:bg-green-700 transition"
           >
-            SIGNUP
+            {loading ? "Creating Account..." : "SIGNUP"}
           </button>
         </form>
       </div>

@@ -27,7 +27,7 @@ export const useProducts = () => {
   };
 
   useEffect(() => {
-    fetchProducts();
+    fetchProducts(); 
   }, []);
 
   return { products, loading, refetch: fetchProducts };

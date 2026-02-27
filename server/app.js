@@ -65,6 +65,8 @@ app.use("/api/admin", require("./routes/adminroute"));
 app.use("/api/products", require("./routes/productroute"));
 app.use("/api/categories", require("./routes/category"));
 
+app.use("/api/auth", require("./routes/authRoutes"));
+
 /* 
    ERROR HANDLER
  */

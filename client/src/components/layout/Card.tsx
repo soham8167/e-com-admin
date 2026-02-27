@@ -40,7 +40,7 @@ const Card = () => {
             key={item._id}
             className="bg-[#FBF9F6] w-60 rounded-2xl p-4 shadow-md relative"
           >
-            {/* ✅ BEST SELLER BADGE */}
+            {/* BEST SELLER BADGE */}
             {item.isBestSeller && (
               <span className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
                 Best Seller

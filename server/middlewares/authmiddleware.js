@@ -8,6 +8,6 @@ module.exports = (req, res, next) => {
     req.admin = verifyToken(token);
     next();
   } catch (err) {
-    res.status(401).json({ msg: "Invalid token" });
+    res.status(401).json({ msg: "Invalid token" }); 
   }
 };
