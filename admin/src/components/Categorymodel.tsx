@@ -2,8 +2,9 @@ import { useState } from "react";
 import { api } from "../api/axios";
 import AdminCategoryForm from "./AdminCategoryForm";
 import { IconPlus } from "./icons/Adminicon";
+import { AnimatePresence, motion } from "framer-motion";
 
-// ─── Types 
+// Types 
 
 interface Category {
   _id: string;
@@ -12,12 +13,12 @@ interface Category {
   createdAt?: string;
 }
 
-interface CategoriesPageProps {
+interface CategoriesPageProps { 
   categories?: Category[];
   onRefresh?: () => void;
 }
 
-// ─── CategoryModal (Reusable for Add + Edit)
+//  CategoryModal
 
 function CategoryModal({
   onClose,
@@ -31,10 +32,23 @@ function CategoryModal({
   const isEdit = !!category;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div
-        className="bg-white rounded-2xl w-full max-w-sm mx-4 overflow-hidden"
+    <motion.div
+      className="fixed inset-0 z-50 flex items-center justify-center px-4"
+      style={{ backgroundColor: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)" }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.22 }}
+      onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <motion.div
+        className="bg-white rounded-2xl w-full max-w-sm overflow-hidden"
         style={{ boxShadow: "0 25px 60px rgba(0,0,0,0.18)" }}
+        initial={{ opacity: 0, scale: 0.92, y: 16 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.94, y: 10 }}
+        transition={{ type: "spring", stiffness: 340, damping: 28, mass: 0.8 }}
+        onMouseDown={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <h3 className="text-sm font-bold text-gray-900">
@@ -54,12 +68,12 @@ function CategoryModal({
             onClose={onClose}
           />
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
-// ─── CategoriesPage 
+// CategoriesPage 
 
 export default function CategoriesPage({
   categories = [],
@@ -190,20 +204,22 @@ export default function CategoriesPage({
       </div>
 
       {/* Modal */}
-      {showModal && (
-        <CategoryModal
-          category={selectedCategory}
-          onClose={() => {
-            setShowModal(false);
-            setSelectedCategory(null);
-          }}
-          onDone={() => {
-            onRefresh();
-            setShowModal(false);
-            setSelectedCategory(null);
-          }}
-        />
-      )}
+      <AnimatePresence>
+        {showModal && (
+          <CategoryModal
+            category={selectedCategory}
+            onClose={() => {
+              setShowModal(false);
+              setSelectedCategory(null);
+            }}
+            onDone={() => {
+              onRefresh();
+              setShowModal(false);
+              setSelectedCategory(null);
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

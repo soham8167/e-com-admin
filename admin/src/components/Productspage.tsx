@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { api } from "../api/axios";
 import AddProductForm from "./Addproductform";
 import { IconPlus } from "./icons/Adminicon";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface Category {
   _id: string;
@@ -38,8 +39,23 @@ function ProductModal({
   categories: Category[];
 }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="bg-white w-full max-w-2xl mx-4 rounded-2xl overflow-hidden shadow-2xl">
+    <motion.div
+      className="fixed inset-0 z-50 flex items-center justify-center px-4"
+      style={{ backgroundColor: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)" }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.22 }}
+      onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <motion.div
+        className="bg-white w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl"
+        initial={{ opacity: 0, scale: 0.92, y: 16 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.94, y: 10 }}
+        transition={{ type: "spring", stiffness: 340, damping: 28, mass: 0.8 }}
+        onMouseDown={(e) => e.stopPropagation()}
+      >
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <h3 className="text-sm font-bold text-gray-900">
             {editData ? "Edit Product" : "Add Product"}
@@ -60,8 +76,8 @@ function ProductModal({
             categories={categories}
           />
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -292,18 +308,21 @@ export default function ProductsPage({
           </tbody>
         </table>
       </div>
+
       {/* Modal */}
-      {showModal && (
-        <ProductModal
-          editData={editData}
-          categories={realCategories}
-          onClose={() => setShowModal(false)}
-          onDone={() => {
-            onRefresh();
-            setShowModal(false);
-          }}
-        />
-      )}
+      <AnimatePresence>
+        {showModal && (
+          <ProductModal
+            editData={editData}
+            categories={realCategories}
+            onClose={() => setShowModal(false)}
+            onDone={() => {
+              onRefresh();
+              setShowModal(false);
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

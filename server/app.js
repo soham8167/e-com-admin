@@ -10,12 +10,12 @@ const app = express();
 
    //CREATE UPLOADS FOLDER 
 
-const uploadPath = path.join(__dirname, "uploads");
+// const uploadPath = path.join(__dirname, "uploads");
 
-if (!fs.existsSync(uploadPath)) {
-  fs.mkdirSync(uploadPath, { recursive: true });
-  console.log("Uploads folder created");
-}
+// if (!fs.existsSync(uploadPath)) {
+//   fs.mkdirSync(uploadPath, { recursive: true });
+//   console.log("Uploads folder created");
+// }
 
 /* 
    CORS CONFIG
@@ -55,7 +55,7 @@ app.use(cookieParser());
    STATIC FOLDER
  */
 
-app.use("/uploads", express.static(uploadPath));
+//app.use("/uploads", express.static(uploadPath));
 
 /* 
    ROUTES
