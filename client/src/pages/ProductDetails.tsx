@@ -5,6 +5,8 @@ import Veggiescard from "../components/layout/veggies/Veggiescard";
 import v1 from "../assets/images/v1.svg";
 import toast from "react-hot-toast";
 import { api } from "../api/axios";
+import { useWishlistStore } from "../store/wishListStore";
+import { useCartStore } from "../store/cardStore";
 
 interface Variant {
   _id: string;
@@ -24,7 +26,8 @@ interface Product {
 
 const ProductDetails = () => {
   const { id } = useParams();
-
+const { addToWishlist } = useWishlistStore();
+const { addToCart } = useCartStore();
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedVariant, setSelectedVariant] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<
@@ -128,6 +131,14 @@ const ProductDetails = () => {
               {/* Add to Cart */}
               <button
                 onClick={() => {
+                  addToCart({
+                    id: product._id,
+                    variantId: selectedVariant._id, 
+                    title: product.title,
+                    price: selectedVariant.price,
+                    image: product.image,
+                    weight: selectedVariant.weight,
+                  });
 
                   toast.success("Added to cart successfully!");
                 }}
@@ -139,6 +150,14 @@ const ProductDetails = () => {
               {/* Add to Wishlist */}
               <button
                 onClick={() => {
+                  addToWishlist({
+                    id: product._id,
+                    variantId: selectedVariant._id, 
+                    title: product.title,
+                    price: selectedVariant.price,
+                    image: product.image,
+                    weight: selectedVariant.weight,
+                  });
                   toast.success("Added to wishlist successfully!");
                 }}
                 className="w-full sm:w-auto border border-green-600 text-green-600 px-4 py-3 rounded-md cursor-pointer flex items-center gap-4"

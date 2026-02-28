@@ -20,7 +20,7 @@ const MyWalletOpen = () => {
 
         {/* Rows */}
         {[
-          { id: "123456780", amount: "₹2500", date: "12/01/2026", status: "Success" },
+          { id: "123456780", amount: "₹2500", date: "12/01/2026", status: "success" },
           { id: "123456781", amount: "₹2500", date: "15/01/2026", status: "Success" },
           { id: "123456782", amount: "₹2500", date: "20/01/2026", status: "Success" },
           { id: "123456783", amount: "₹2500", date: "25/01/2026", status: "Success" },

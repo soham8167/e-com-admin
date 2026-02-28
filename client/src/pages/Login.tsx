@@ -11,7 +11,7 @@ const Login = () => {
 
   const [loading, setLoading] = useState(false);
 
-  // ✅ Real Login with Backend
+  //   Login with Backend
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -38,11 +38,11 @@ const Login = () => {
         return;
       }
 
-      // ✅ Store JWT token
+      // Store JWT token
       localStorage.setItem("token", data.token);
 
       alert("Login successful");
-      navigate("/mywallet");
+      navigate("/");
 
     } catch (error) {
       console.error(error);

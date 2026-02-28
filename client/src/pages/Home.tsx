@@ -1,5 +1,3 @@
-
-
 import Card from "../components/layout/Card";
 import Catagory from "../components/layout/Catagory";
 import AddProduct from "../components/layout/AddProduct";

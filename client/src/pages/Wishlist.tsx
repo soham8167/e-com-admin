@@ -3,7 +3,7 @@ import { useCartStore } from "../store/cardStore";
 import { useWishlistStore } from "../store/wishListStore";
 
 const Wishlist = () => {
-  const { items, removeFromWishlist } = useWishlistStore();
+  const { items, removeFromWishlist } = useWishlistStore(); 
   const { addToCart } = useCartStore();
 
   if (items.length === 0) {
@@ -35,9 +35,7 @@ const Wishlist = () => {
             <div className="mt-auto flex gap-2">
               <button
                 onClick={() => addToCart(item)}
-                className="flex-1 bg-orange-500 text-white py-2 rounded cursor-pointer
-                
-                "
+                className="flex-1 bg-orange-500 text-white py-2 rounded cursor-pointer"
               >
                 Add to Cart
               </button>

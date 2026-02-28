@@ -1,7 +1,6 @@
-
 export interface CartItem {
-  id: number;           
-  variantId : number ;    
+  id: string;               
+  variantId: number;
   title: string;
   price: number | undefined;
   image: string;
@@ -12,7 +11,8 @@ export interface CartItem {
 export interface CartState {
   items: CartItem[];
   addToCart: (product: Omit<CartItem, "quantity">) => void;
-  increment: (id: number, variantId: number) => void;
-  decrement: (id: number, variantId: number) => void;
-  removeItem: (id: number, variantId: number) => void;
+
+  increment: (id: string, variantId: number) => void;   
+  decrement: (id: string, variantId: number) => void;   
+  removeItem: (id: string, variantId: number) => void;  
 }

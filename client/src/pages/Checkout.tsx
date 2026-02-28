@@ -122,7 +122,9 @@ const Checkout = () => {
       Add funds to your wallet
     </button>
 
-    <button className="bg-orange-500 text-white px-8 py-2.5 rounded-lg
+    <button 
+    onClick={()=>alert("Coming soon")}
+    className="bg-orange-500 text-white px-8 py-2.5 rounded-lg
                        text-sm font-medium w-full sm:w-auto">
       Proceed to Payment
     </button>

@@ -19,7 +19,7 @@ const Cart = () => {
           <span>Product</span>
           <span>Quantity</span>
           <span>Total</span>
-          <span>Tax</span>
+          <span>Tax</span> 
           <span>Shipping</span>
           <span>Discount</span>
         </div>

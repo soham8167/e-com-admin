@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { CartState } from "../type/cardStoretype";
-
+ 
 export const useCartStore = create<CartState>()(
   persist(
     (set) => ({

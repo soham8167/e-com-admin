@@ -2,10 +2,13 @@ import { Minus, Plus, ShoppingCart } from "lucide-react";
 import { motion } from "framer-motion";
 import { useProducts } from "../../hooks/useProducts";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 
 const Card = () => {
   const { products, loading } = useProducts();
   const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const navigate = useNavigate();
 
   //  FILTER USING isBestSeller FLAG
   const bestSellerProducts = products.filter(
@@ -88,8 +91,10 @@ const Card = () => {
                     <Plus size={12} />
                   </button>
                 </div>
-
-                <button className="flex items-center gap-2 border border-orange-500 text-orange-500 px-3 py-2 rounded-xl hover:bg-orange-500 hover:text-white">
+ 
+                <button
+                onClick={() => navigate(`/product/${item._id}`)}
+                className="flex items-center gap-2 border border-orange-500 text-orange-500 px-3 py-2 rounded-xl hover:bg-orange-500 hover:text-white">
                   <ShoppingCart size={15} />
                   Cart
                 </button>
@@ -98,7 +103,7 @@ const Card = () => {
           </div>
         ))
       )}
-    </div>
+    </div>  
   );
 };
 

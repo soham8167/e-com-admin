@@ -115,7 +115,7 @@ const Signup = () => {
       }
 
       alert("Signup successful");
-      navigate("/login");
+      navigate("/");
 
     } catch (error) {
       console.error(error);
@@ -228,7 +228,7 @@ const Signup = () => {
             disabled={loading}
             className="mt-6 bg-green-600 text-white px-8 py-2 rounded hover:bg-green-700 transition"
           >
-            {loading ? "Creating Account..." : "SIGNUP"}
+            {loading ? "Creating Account..." : "SIGNUP"} 
           </button>
         </form>
       </div>
@@ -236,4 +236,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default Signup; 

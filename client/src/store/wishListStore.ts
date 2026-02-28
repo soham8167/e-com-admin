@@ -10,7 +10,7 @@ export const useWishlistStore = create<WishlistState>()(
       items: [],
 
       addToWishlist: (item) => {
-        const exists = get().items.find(i => i.id === item.id);
+        const exists = get().items.find(i => i.id === item.id);  
         if (exists) return;
 
         set({ items: [...get().items, item] });
