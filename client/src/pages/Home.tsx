@@ -22,15 +22,13 @@ const navigate = useNavigate();
       <div className="relative min-h-screen overflow-hidden">
         {/*  Background Video */}
         <video
-  className="absolute top-0 left-0 w-full h-full object-cover"
-  autoPlay
-  loop
-  muted
-  playsInline
-  preload="auto"
->
-  <source src="/home-video.mp4" type="video/mp4" />
-</video>
+          className="absolute top-0 left-0 w-full h-full object-cover"
+          src="/home-video.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+        />
 
         <div className="absolute inset-0 bg-black/40"></div>
 
