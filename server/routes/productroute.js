@@ -75,9 +75,6 @@ router.get("/best-sellers", async (req, res) => {
 
 
 
-
-
-
 // GET SINGLE PRODUCT
 router.get("/:id", async (req, res) => {
   try {

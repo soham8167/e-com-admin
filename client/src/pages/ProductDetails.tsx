@@ -24,6 +24,7 @@ interface Product {
 
 const ProductDetails = () => {
   const { id } = useParams();
+
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedVariant, setSelectedVariant] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<
@@ -127,6 +128,7 @@ const ProductDetails = () => {
               {/* Add to Cart */}
               <button
                 onClick={() => {
+
                   toast.success("Added to cart successfully!");
                 }}
                 className="w-full sm:w-auto bg-orange-500 text-white px-6 py-3 rounded-md cursor-pointer"
