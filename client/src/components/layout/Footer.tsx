@@ -63,9 +63,9 @@ const Footer = () => {
 
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 mt-2 justify-center sm:justify-start">
             <p className="text-[#7C6345]">Follow our Journey</p>
-            <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
+            <div className="flex flex-wrap gap-3 justify-center sm:justify-start">
               {[a1, a2, a3, a4].map((icon, idx) => (
-                <div key={idx} className="border bg-white rounded-full p-1">
+                <div key={idx} className="border bg-white rounded-full p-2">
                   <img src={icon} alt={`icon-${idx}`} />
                 </div>
               ))}
@@ -84,3 +84,4 @@ const Footer = () => {
 };
 
 export default Footer;
+

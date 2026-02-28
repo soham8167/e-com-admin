@@ -2,21 +2,12 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const fs = require("fs");
-const path = require("path");
+
 
 const app = express();
 
 
-   //CREATE UPLOADS FOLDER 
-
-// const uploadPath = path.join(__dirname, "uploads");
-
-// if (!fs.existsSync(uploadPath)) {
-//   fs.mkdirSync(uploadPath, { recursive: true });
-//   console.log("Uploads folder created");
-// }
-
+   
 /* 
    CORS CONFIG
 */
@@ -50,12 +41,6 @@ app.use(
 
 app.use(express.json());
 app.use(cookieParser());
-
-/* 
-   STATIC FOLDER
- */
-
-//app.use("/uploads", express.static(uploadPath));
 
 /* 
    ROUTES

@@ -88,9 +88,6 @@ r.put("/:id", auth, upload.single("image"), async (req, res) => {
 
 
 
-
-
-
 // DELETE CATEGORY
 r.delete("/:id", auth, async (req, res) => {
   try {

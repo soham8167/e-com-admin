@@ -9,7 +9,7 @@ import { api } from "../api/axios";
 interface Variant {
   _id: string;
   weight: string;
-  price: number;
+  price: number; 
 }
 
 interface Product {
